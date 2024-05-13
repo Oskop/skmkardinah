@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <title>Survey Kepuasan</title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+
+    <!-- Favicons -->
+    <link href="{% static 'survey/assets_frontend/img/kardinah.png' %}" rel="icon">
+    <link href="{% static 'survey/assets_frontend/assets/img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+        rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link href="{% static 'survey/assets_frontend/assets/vendor/aos/aos.css' %}" rel="stylesheet">
+    <link href="{% static 'survey/assets_frontend/assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'survey/assets_frontend/assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+    <link href="{% static 'survey/assets_frontend/assets/vendor/boxicons/css/boxicons.min.css' %}" rel="stylesheet">
+    <link href="{% static 'survey/assets_frontend/assets/vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
+    <link href="{% static 'survey/assets_frontend/assets/vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
+
+    <link href="{% static 'fontawesomefree/css/all.min.css' %}" rel="stylesheet" type="text/css">
+
+    <!-- Template Main CSS File -->
+    <link href="{% static 'survey/assets_frontend/assets/css/style.css' %}" rel="stylesheet">
+    {# <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous"> #}
+
+    <link rel="stylesheet" href="{% static 'survey/assets_frontend/assets/css/font-awesome.6.0.0.all.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'survey/assets_frontend/assets/css/kioskboard-2.3.0.min.css' %}" />
+    <script src="{% static 'survey/assets_frontend/assets/js/kioskboard-2.3.0.min.js' %}"></script>
+    <style>
+        .ratting input[type="radio"] {
+            display: none;
+        }
+
+
+
+        .ratting label {
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            font-size: 40px;
+            /* Ubah ukuran ikon hati sesuai kebutuhan */
+            color: darkgrey;
+            /* Warna awal ikon hati (merah) */
+            display: inline-block;
+        }
+
+        .ratting input:checked+label {
+            color: orange;
+            /* Warna ikon hati saat dipilih (kuning) */
+        }
+
+        .card {
+            width: 780px;
+            height: 470px;
+            background-color: #dadcde4f;
+            border: 1px solid #ccc;
+            border-radius: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-header {
+            background-color: orange;
+            /* Header card dengan tingkat transparansi */
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+
+            border-radius: 40px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            font-weight: bold;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        }
+
+        .navbar {
+
+            font-weight: bold;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        }
+
+        textarea#comments {
+
+            background-color: white;
+            /* Warna oranye dengan tingkat transparansi */
+            border: 1px;
+            border-radius: 5px;
+            padding: 5px;
+            width: 70%;
+            /* Lebar 100% agar lebih lebar */
+            min-height: 100px;
+            /* Ketinggian minimum agar tidak terlalu pendek */
+            resize: vertical;
+            /* Izinkan pengguna mengubah ukuran vertikal */
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ======= Header ======= -->
+    <header id="header" class="fixed-top " style="background-color: transparent;">
+        <div class="container d-flex align-items-center justify-content-between">
+
+            <div class="logo">
+                <h1><a href=""><img src="{% static 'survey/assets_frontend/img/kardinah.png' %}" class="img-fluid" alt="" width="50">
+                        RSUD KARDINAH</a></h1>
+            </div>
+
+            <nav id="navbar" class="navbar">
+
+                <i class="bi bi-list mobile-nav-toggle"></i>
+            </nav><!-- .navbar -->
+
+        </div>
+    </header><!-- End Header -->
+
+    <div class="row content " style="background-image: url('img/card1.png'); ">
+        <div class="col-md-4" data-aos="fade-right">
+            <img src="{% static 'survey/assets/img/details-5.png' %}" class="img-fluid" alt="">
+        </div>
+        <div class="col-md-8 pt-5" data-aos="fade-up">
+            <br>
+            <div class="card" style="background-image: url('img/card1.png'); ">
+                <div class="card-header">
+                    <h3 class="text-center " style="color: white;">Survei Kepuasan Pelayanan</h3>
+                </div>
+                <div class="card-body">
+                    <form id="surveyForm" class="text-center" method="POST" action="{{ route('ratting.store' %}">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                        <div class="row">
+                            <div class="form-group">
+                            <label for="instalasi">Masukkan Nomor Rekam Medis (NoRM)</label>
+                            <input type="text" id="norm" name="norm" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 pt-1">
+                                <label for="instalasi">Pilih Instalasi:</label>
+                                <select required class="form-control" name="id_instalasi" id="instalasi"
+                                    data-url="{{ route('get-ruangan-base' %}">
+                                    <option value="">Pilih Instalasi</option>
+                                    {# for  in  #}
+                                    <option value="{# old('id_instalasi', $instalasi->id #}">
+                                        {# $instalasi->instalasi #}</option>
+                                    {# endfor #}
+                                </select>
+                            </div>
+                            <div class="col-md-6 pt-1">
+                                <label for="ruangan">Pilih Ruangan:</label>
+                                <select required class="form-control" name="id_ruangan" id="ruangan">
+                                    <option value="">Pilih Ruangan</option>
+                                </select>
+                            </div>
+                        </div>
+                        <label for="ratting" class="pt-2">Berikan peringkat (dari 1 hingga 5):</label>
+                        <br>
+                        <div class="ratting">
+                            <input type="radio" id="heart1" name="ratting" value="{{ old('ratting', 1 %}">
+                            <label for="heart1"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="heart2" name="ratting" value="{{ old('ratting', 2 %}">
+                            <label for="heart2"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="heart3" name="ratting" value="{{ old('ratting', 3 %}">
+                            <label for="heart3"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="heart4" name="ratting" value="{{ old('ratting', 4 %}">
+                            <label for="heart4"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="heart5" name="ratting" value="{{ old('ratting', 5 %}">
+                            <label for="heart5"><i class="fas fa-star"></i></label>
+                        </div>
+                        <label for="comments">Komentar Anda:</label><br>
+                        <textarea id="comments" name="comment" rows="4" style="font-size: 30px"
+                            class="js-kioskboard-input" data-kioskboard-type="all" data-kioskboard-placement="bottom"
+                            data-kioskboard-specialcharacters="true" placeholder="Masukan Saran"></textarea>
+                        <br>
+                        <button class="btn btn-primary" type="submit">Kirim Survei</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <!-- ======= Footer ======= -->
+    <footer id="footer">
+
+        <div class="container py-4">
+            <div class="copyright">
+                &copy; Copyright <strong><span>PDE</span></strong>. RSUD KARDINAH
+            </div>
+            <div class="credits">
+                Designed by <a href="#">PDE</a>
+            </div>
+        </div>
+    </footer><!-- End Footer -->
+
+    <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+            class="bi bi-arrow-up-short"></i></a>
+
+    <!-- Vendor JS Files -->
+    <script src="{% static 'survey/assets_frontend/assets/vendor/aos/aos.js' %}"></script>
+    <script src="{% static 'survey/assets_frontend/assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'survey/assets_frontend/assets/vendor/glightbox/js/glightbox.min.js' %}"></script>
+    <script src="{% static 'survey/assets_frontend/assets/vendor/swiper/swiper-bundle.min.js' %}"></script>
+    <script src="{% static 'survey/assets_frontend/assets/vendor/php-email-form/validate.js' %}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Template Main JS File -->
+    {{--
+    <script>
+        $(document).ready(function () {
+            $('#instalasi').change(function () {
+                var selectedInstalasi = $(this).val();
+                $('#ruangan').html('<option value="">Pilih Ruangan</option>'); // Reset dropdown ruangan
+
+                if (selectedInstalasi) {
+                    $.ajax({
+                        url: '/get-ruangan/' +
+                            selectedInstalasi, // Ganti dengan rute yang sesuai di aplikasi Anda
+                        method: 'GET',
+                        success: function (data) {
+                            $('#ruangan').html(data);
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+    <script>
+        KioskBoard.init({
+            keysArrayOfObjects: null,
+            keysJsonUrl: "{% static 'assets/dist/kioskboard-keys-english.json' %}",
+            keysSpecialCharsArrayOfStrings: null,
+            keysNumpadArrayOfNumbers: null,
+            language: 'en',
+            theme: 'light',
+            autoScroll: true,
+            capsLockActive: true,
+            allowRealKeyboard: false,
+            allowMobileKeyboard: false,
+            cssAnimations: true, // CSS animations duration as millisecond 
+            cssAnimationsDuration: 360, // CSS animations style for opening or closing the keyboard => "slide" || "fade" 
+            cssAnimationsStyle: 'slide', // Enable or Disable Spacebar functionality on the keyboard. The Spacebar will be passive when "false" 
+            keysAllowSpacebar: true, // Text of the Space key (Spacebar). Without text => " " 
+            keysSpacebarText: 'Space', // Font family of the keys 
+            keysFontFamily: 'sans-serif', // Font size of the keys 
+            keysFontSize: '15px', // Font weight of the keys 
+            keysFontWeight: 'normal', // Size of the icon keys 
+            keysIconSize: '15px', // Text of the Enter key (Enter/Return). Without text => " " 
+            keysEnterText: 'Enter', // The callback function of the Enter key. This function will be called when the enter key has been clicked. 
+            keysEnterCallback: undefined, // The Enter key can close and remove the keyboard. Prevented when "false" 
+            keysEnterCanClose: true,
+        });
+        $(document).ready(function () {
+            $('#instalasi').change(function () {
+                var selectedInstalasi = $(this).val();
+                var $ruanganDropdown = $('#ruangan');
+                $ruanganDropdown.empty();
+
+                if (selectedInstalasi) {
+                    var url = $(this).attr('data-url') + '/' + selectedInstalasi;
+                    $.get(url, function (data) {
+                        $ruanganDropdown.append($('<option>', {
+                            value: "",
+                            text: "Pilih Ruangan"
+                        }
+                        ));
+                        data.forEach(function (ruangan) {
+                            $ruanganDropdown.append($('<option>', {
+                                value: ruangan.id,
+                                text: ruangan.ruangan
+                            }
+                            ));
+                        });
+                    });
+                }
+            });
+            KioskBoard.run('.js-kioskboard-input', {
+                // ...init options 
+            });
+        });
+    </script>
+    <script src="{% static 'survey/assets_frontend/assets/js/main.js' %}"></script>
+    <script>
+        // script.js
+
+        document.getElementById('surveyForm').addEventListener('change', function () {
+            const ratting = document.querySelector('input[name="ratting"]:checked').value;
+            const starLabels = document.querySelectorAll('.ratting label');
+
+            // Reset semua bintang menjadi warna awal merah
+            starLabels.forEach((label, index) => {
+                label.style.color = 'darkgrey'; // Warna merah
+                if (index < ratting) {
+                    label.style.color = 'orange'; // Warna kuning untuk bintang yang sesuai dengan peringkat
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>
