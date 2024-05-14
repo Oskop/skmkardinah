@@ -22,5 +22,5 @@ from survey.urls import survey_index
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('survey/', include('survey.urls')),
-    path('/', survey_index),
+    path('', survey_index),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
