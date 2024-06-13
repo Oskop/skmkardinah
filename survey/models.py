@@ -259,6 +259,13 @@ class Pasien(models.Model):
 
 # Rumah Sakit
 class Instalasi(models.Model):
+    """Instalasi Model
+
+    Args:
+        models (**kwargs): (
+            nama: str(30)
+        )
+    """
     id = models.CharField(primary_key=True, max_length=2, db_column="id")
     nama = models.CharField(max_length=30, db_column="nama")
     class Meta:
@@ -269,6 +276,14 @@ class Instalasi(models.Model):
 
 
 class Ruangan(models.Model):
+    """Ruangan Model
+
+    Args:
+        models (**kwargs): (
+            nama: str(30),
+            id_instalasi: Instalasi
+        )
+    """
     id = models.CharField(primary_key=True, max_length=3, db_column="id")
     nama = models.CharField(max_length=30, db_column="nama")
     id_instalasi = models.ForeignKey(
@@ -281,6 +296,14 @@ class Ruangan(models.Model):
 
 
 class Kamar(models.Model):
+    """Kamar Model
+
+    Args:
+        models (**kwargs): (
+            nama: str(30),
+            id_ruangan: Ruangan
+        )
+    """
     id = models.CharField(primary_key=True, max_length=4, db_column="id")
     nama = models.CharField(max_length=30, db_column="nama")
     id_ruangan = models.ForeignKey(
@@ -294,6 +317,14 @@ class Kamar(models.Model):
 
 
 class TempatTidur(models.Model):
+    """Tempat Tidur Model
+
+    Args:
+        models (**kwargs): (
+            nama: str(10),
+            id_kamar: Kamar
+        )
+    """
     id = models.CharField(primary_key=True, max_length=4, db_column="id")
     nama = models.CharField(max_length=10, db_column="nama")
     id_kamar = models.ForeignKey(
@@ -318,6 +349,13 @@ class TempatTidur(models.Model):
 
 
 class KelasPelayanan(models.Model):
+    """Kelas Pelayanan Model
+
+    Args:
+        models (**kwargs): (
+            nama: str(10)
+        )
+    """
     id = models.CharField(primary_key=True, max_length=2, db_column="id")
     nama = models.CharField(max_length=10, db_column="nama")
 
@@ -329,6 +367,17 @@ class KelasPelayanan(models.Model):
 
 
 class Registrasi(models.Model):
+    """Registrasi Model
+
+    Args:
+        models (**kwargs): {
+            id: int
+            norm: Pasien
+            id_kelas: KelasPelayanan
+            tglregistrasi: datetime
+            tglpulang: datetime|nullable
+        }
+    """
     id = models.AutoField(primary_key=True, db_column="id")
     norm = models.ForeignKey(
         Pasien, models.DO_NOTHING, 
@@ -337,8 +386,9 @@ class Registrasi(models.Model):
     #     Penjamin, models.DO_NOTHING, db_column="id_penjamin")
     id_kelas = models.ForeignKey(
         KelasPelayanan, models.DO_NOTHING, db_column="id_kelas")
-    tglregistrasi = models.DateField(db_column="tglpendaftaran")
-    tglpulang = models.DateField(db_column="tglpulang")
+    tglregistrasi = models.DateTimeField(db_column="tglpendaftaran")
+    tglpulang = models.DateTimeField(db_column="tglpulang", 
+                                     null=True, blank=True)
 
     created_at = models.DateTimeField(
         auto_now_add=True, blank=True, null=True)
@@ -353,10 +403,19 @@ class Registrasi(models.Model):
 
 
 class PemakaianKamar(models.Model):
+    """Pemakaian Kamar Model
+
+    Args:
+        models (**kwargs): (
+            id_registrasi: Registrasi
+            tglmasuk: datetime
+            tglkeluar: datetime
+            id_tempattidur: TempatTidur
+    """
     id = models.AutoField(primary_key=True, db_column="id")
     id_registrasi = models.ForeignKey(
         Registrasi, models.DO_NOTHING, db_column="id_pendaftaran")
-    tglmasuk = models.DateTimeField(default=datetime.now())
+    tglmasuk = models.DateTimeField(auto_now_add=True)
     tglkeluar = models.DateTimeField(blank=True, null=True)
     id_tempattidur = models.ForeignKey(
         TempatTidur, models.DO_NOTHING, db_column='id_tempattidur',)
@@ -373,6 +432,18 @@ class PemakaianKamar(models.Model):
 
 
 class SurveiKepuasanMasyarakat(models.Model):
+    """Survei Kepuasan Masyarakat
+
+    Args:
+        models (**kwargs): (
+            id_registrasi: Registrasi,
+            fasilitas_rate: int,
+            perawat_rate: int,
+            dokter_rate: int,
+            farmasi_rate: int,
+            komentar: str(-1)
+        )
+    """
     id = models.AutoField(primary_key=True, db_column='id')
     id_registrasi = models.ForeignKey(
         Registrasi, models.DO_NOTHING, db_column="id_pendaftaran")
