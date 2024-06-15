@@ -140,51 +140,110 @@
                 <div class="card-body">
                     <form id="surveyForm" class="text-center" method="POST" action="{{ route('ratting.store' %}">
                         {% csrf_token %}
+                        <div class="row justify-content-center">
+                            <div class="form-group col-8">
+                                <label for="instalasi">Masukkan Nomor Rekam Medis (NoRM)</label>
+                                <div class="d-flex">
+                                    <input type="text" class="form-control" id="norm" name="norm" value="">
+                                    <input type="button" class="btn btn-primary ms-2" id="checknorm" name="checknorm" value="Cek">
+                                    <input type="hidden" id="noregistrasi" name="noregistrasi" value="">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 pt-1">
+                                <label for="instalasi">Nama</label>
+                                <input type="text" class="form-control" style="background-color: white;"
+                                name="namapasien" id="namapasien" disabled="disabled" value="">
+                            </div>
+                            <div class="col-md-6 pt-1">
+                                <label for="ruangan">Ruangan</label>
+                                <input type="text" class="form-control" style="background-color: white;" name="namapasien" id="namapasien"
+                                disabled="disabled" value="">
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label for="fasilitasrating">Fasilitas</label>
+                                    <span class="star-rating form-control" style="background-color: transparent; border: none;">
+                                        <label for="fasilitas-rate-1" style="--i:1"><i class="fa-solid fa-star"></i></label>
+                                        <input type="radio" name="fasilitas-rating" id="fasilitas-rate-1" value="1" checked>
+                                        <label for="fasilitas-rate-2" style="--i:2"><i class="fa-solid fa-star"></i></label>
+                                        <input type="radio" name="fasilitas-rating" id="fasilitas-rate-2" value="2">
+                                        <label for="fasilitas-rate-3" style="--i:3"><i class="fa-solid fa-star"></i></label>
+                                        <input type="radio" name="fasilitas-rating" id="fasilitas-rate-3" value="3">
+                                        <label for="fasilitas-rate-4" style="--i:4"><i class="fa-solid fa-star"></i></label>
+                                        <input type="radio" name="fasilitas-rating" id="fasilitas-rate-4" value="4">
+                                        <label for="fasilitas-rate-5" style="--i:5"><i class="fa-solid fa-star"></i></label>
+                                        <input type="radio" name="fasilitas-rating" id="fasilitas-rate-5" value="5">
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label for="farmasirating">Farmasi</label>
+                                    <span class="star-rating form-control" style="background-color: transparent; border: none;">
+                                        <label for="farmasi-rate-1" style="--i:1"><i class="fa-solid fa-star"></i></label>
+                                        <input type="radio" name="farmasi-rating" id="farmasi-rate-1" value="1" checked>
+                                        <label for="farmasi-rate-2" style="--i:2"><i class="fa-solid fa-star"></i></label>
+                                        <input type="radio" name="farmasi-rating" id="farmasi-rate-2" value="2">
+                                        <label for="farmasi-rate-3" style="--i:3"><i class="fa-solid fa-star"></i></label>
+                                        <input type="radio" name="farmasi-rating" id="farmasi-rate-3" value="3">
+                                        <label for="farmasi-rate-4" style="--i:4"><i class="fa-solid fa-star"></i></label>
+                                        <input type="radio" name="farmasi-rating" id="farmasi-rate-4" value="4">
+                                        <label for="farmasi-rate-5" style="--i:5"><i class="fa-solid fa-star"></i></label>
+                                        <input type="radio" name="farmasi-rating" id="farmasi-rate-5" value="5">
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label for="perawatrating">Perawat</label>
+                                    <span class="star-rating form-control" style="background-color: transparent; border: none;">
+                                        <label for="perawat-rate-1" style="--i:1"><i class="fa-solid fa-star"></i></label>
+                                        <input type="radio" name="perawat-rating" id="perawat-rate-1" value="1" checked>
+                                        <label for="perawat-rate-2" style="--i:2"><i class="fa-solid fa-star"></i></label>
+                                        <input type="radio" name="perawat-rating" id="perawat-rate-2" value="2">
+                                        <label for="perawat-rate-3" style="--i:3"><i class="fa-solid fa-star"></i></label>
+                                        <input type="radio" name="perawat-rating" id="perawat-rate-3" value="3">
+                                        <label for="perawat-rate-4" style="--i:4"><i class="fa-solid fa-star"></i></label>
+                                        <input type="radio" name="perawat-rating" id="perawat-rate-4" value="4">
+                                        <label for="perawat-rate-5" style="--i:5"><i class="fa-solid fa-star"></i></label>
+                                        <input type="radio" name="perawat-rating" id="perawat-rate-5" value="5">
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label for="dokterrating">dokter</label>
+                                    <span class="star-rating form-control" style="background-color: transparent; border: none;">
+                                        <label for="dokter-rate-1" style="--i:1"><i class="fa-solid fa-star"></i></label>
+                                        <input type="radio" name="dokter-rating" id="dokter-rate-1" value="1" checked>
+                                        <label for="dokter-rate-2" style="--i:2"><i class="fa-solid fa-star"></i></label>
+                                        <input type="radio" name="dokter-rating" id="dokter-rate-2" value="2">
+                                        <label for="dokter-rate-3" style="--i:3"><i class="fa-solid fa-star"></i></label>
+                                        <input type="radio" name="dokter-rating" id="dokter-rate-3" value="3">
+                                        <label for="dokter-rate-4" style="--i:4"><i class="fa-solid fa-star"></i></label>
+                                        <input type="radio" name="dokter-rating" id="dokter-rate-4" value="4">
+                                        <label for="dokter-rate-5" style="--i:5"><i class="fa-solid fa-star"></i></label>
+                                        <input type="radio" name="dokter-rating" id="dokter-rate-5" value="5">
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="form-group">
-                            <label for="instalasi">Masukkan Nomor Rekam Medis (NoRM)</label>
-                            <input type="text" id="norm" name="norm" value="">
+                                <label for="comments">Komentar Anda:</label><br>
+                                <textarea id="comments" name="komentar" rows="4" style="font-size: 30px"
+                                    class="js-kioskboard-input" data-kioskboard-type="all" data-kioskboard-placement="bottom"
+                                    data-kioskboard-specialcharacters="true" placeholder="Masukan Saran"></textarea>
+                                <br>
+                                <button class="btn btn-primary" type="submit">Kirim Survei</button>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-6 pt-1">
-                                <label for="instalasi">Pilih Instalasi:</label>
-                                <select required class="form-control" name="id_instalasi" id="instalasi"
-                                    data-url="{{ route('get-ruangan-base' %}">
-                                    <option value="">Pilih Instalasi</option>
-                                    {# for  in  #}
-                                    <option value="{# old('id_instalasi', $instalasi->id #}">
-                                        {# $instalasi->instalasi #}</option>
-                                    {# endfor #}
-                                </select>
-                            </div>
-                            <div class="col-md-6 pt-1">
-                                <label for="ruangan">Pilih Ruangan:</label>
-                                <select required class="form-control" name="id_ruangan" id="ruangan">
-                                    <option value="">Pilih Ruangan</option>
-                                </select>
-                            </div>
-                        </div>
-                        <label for="ratting" class="pt-2">Berikan peringkat (dari 1 hingga 5):</label>
-                        <br>
-                        <div class="ratting">
-                            <input type="radio" id="heart1" name="ratting" value="{{ old('ratting', 1 %}">
-                            <label for="heart1"><i class="fas fa-star"></i></label>
-                            <input type="radio" id="heart2" name="ratting" value="{{ old('ratting', 2 %}">
-                            <label for="heart2"><i class="fas fa-star"></i></label>
-                            <input type="radio" id="heart3" name="ratting" value="{{ old('ratting', 3 %}">
-                            <label for="heart3"><i class="fas fa-star"></i></label>
-                            <input type="radio" id="heart4" name="ratting" value="{{ old('ratting', 4 %}">
-                            <label for="heart4"><i class="fas fa-star"></i></label>
-                            <input type="radio" id="heart5" name="ratting" value="{{ old('ratting', 5 %}">
-                            <label for="heart5"><i class="fas fa-star"></i></label>
-                        </div>
-                        <label for="comments">Komentar Anda:</label><br>
-                        <textarea id="comments" name="komentar" rows="4" style="font-size: 30px"
-                            class="js-kioskboard-input" data-kioskboard-type="all" data-kioskboard-placement="bottom"
-                            data-kioskboard-specialcharacters="true" placeholder="Masukan Saran"></textarea>
-                        <br>
-                        <button class="btn btn-primary" type="submit">Kirim Survei</button>
                     </form>
                 </div>
             </div>
