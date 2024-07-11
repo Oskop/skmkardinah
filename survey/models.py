@@ -247,6 +247,9 @@ class Pasien(models.Model):
     deleted_at = models.DateTimeField(blank=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
 
+    def __str__(self) -> str:
+        return f"{self.nocm} {self.nama}"
+
     class Meta:
         managed = True
         db_table = 'pasien'
@@ -268,6 +271,9 @@ class Instalasi(models.Model):
     """
     id = models.CharField(primary_key=True, max_length=2, db_column="id")
     nama = models.CharField(max_length=30, db_column="nama")
+
+    def __str__(self) -> str:
+        return f"{self.id} {self.nama}"
     class Meta:
         managed = True
         db_table = "instalasi"
@@ -288,6 +294,10 @@ class Ruangan(models.Model):
     nama = models.CharField(max_length=30, db_column="nama")
     id_instalasi = models.ForeignKey(
         Instalasi, models.DO_NOTHING, db_column="id_instalasi")
+    
+    def __str__(self) -> str:
+        return f"{self.nama}"
+
     class Meta:
         managed = True
         db_table = "ruangan"
@@ -308,6 +318,9 @@ class Kamar(models.Model):
     nama = models.CharField(max_length=30, db_column="nama")
     id_ruangan = models.ForeignKey(
         Ruangan, models.DO_NOTHING, db_column="id_ruangan")
+    
+    def __str__(self) -> str:
+        return f"{self.nama}"
 
     class Meta:
         managed = True
@@ -329,6 +342,9 @@ class TempatTidur(models.Model):
     nama = models.CharField(max_length=10, db_column="nama")
     id_kamar = models.ForeignKey(
         Kamar, models.DO_NOTHING, db_column="id_kamar")
+    
+    def __str__(self) -> str:
+        return f"{self.nama}"
 
     class Meta:
         managed = True
@@ -359,6 +375,9 @@ class KelasPelayanan(models.Model):
     id = models.CharField(primary_key=True, max_length=2, db_column="id")
     nama = models.CharField(max_length=10, db_column="nama")
 
+    def __str__(self) -> str:
+        return f"{self.nama}"
+
     class Meta:
         managed = True
         db_table = "kelas_pelayanan"
@@ -381,7 +400,7 @@ class Registrasi(models.Model):
     id = models.AutoField(primary_key=True, db_column="id")
     norm = models.ForeignKey(
         Pasien, models.DO_NOTHING, 
-        db_column="id_pasien")
+        db_column="id_pasien", to_field='nocm')
     # id_penjamin = models.ForeignKey(
     #     Penjamin, models.DO_NOTHING, db_column="id_penjamin")
     id_kelas = models.ForeignKey(
@@ -394,6 +413,9 @@ class Registrasi(models.Model):
         auto_now_add=True, blank=True, null=True)
     deleted_at = models.DateTimeField(blank=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
+
+    def __str__(self) -> str:
+        return f"No. Reg. {self.id}"
 
     class Meta:
         managed = True
