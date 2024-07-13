@@ -161,14 +161,13 @@ class Pasien(models.Model):
     Args:
         models (**kwargs): defined attribute[
             nik: CharField(primary_key=True, max_length=16)
+            nocm: CharField(max_length=7, unique=True,
+                                    db_column="nocm")
             jk: CharField(max_length=1, blank=True, null=True)
             id_tmp_lahir: ForeignKey(
                 Kotakab, models.DO_NOTHING, db_column='id_tmp_lahir',
                 blank=True, null=True)
             tgl_lahir: DateTimeField(blank=True, null=True)
-            id_agama: ForeignKey(
-                Agama, models.DO_NOTHING, db_column='id_agama', 
-                blank=True, null=True)
             alamat: TextField(blank=True, null=True)
             rt: CharField(max_length=2, blank=True, null=True)
             rw: CharField(max_length=2, blank=True, null=True)
@@ -176,22 +175,8 @@ class Pasien(models.Model):
                 Kelurahan, models.DO_NOTHING, db_column='id_kelurahan',
                 blank=True, null=True)
             kode_pos: CharField(max_length=5, blank=True, null=True)
-            pekerjaan: CharField(max_length=30, blank=True, null=True)
-            id_pendidikan: ForeignKey(
-                Pendidikan, models.DO_NOTHING, db_column='id_pendidikan',
-                blank=True, null=True)
-            kewarganegaraan: CharField(max_length=3, blank=True, null=True)
-            status_kawin_id: CharField(max_length=11, blank=True, null=True)
-            status_hub_kel_id: CharField(max_length=15, blank=True, null=True)
             created_at: DateTimeField(blank=True, null=True)
             deleted_at: DateTimeField(blank=True, null=True)
-            no_kk: ForeignKey(
-                Keluarga, models.DO_NOTHING, db_column='no_kk', blank=True, null=True)
-            ayah: CharField(max_length=60, blank=True, null=True)
-            ibu: CharField(max_length=60, blank=True, null=True)
-            id_goldar: ForeignKey(
-                GolonganDarah, models.DO_NOTHING, db_column='id_goldar',
-                blank=True, null=True)
             nama: CharField(max_length=60, blank=True, null=True)
             updated_at: DateTimeField(blank=True, null=True)
         ]
@@ -204,8 +189,9 @@ class Pasien(models.Model):
     jk = models.CharField(max_length=1, blank=True, null=True)
     id_tmp_lahir = models.ForeignKey(
         Kotakab, models.DO_NOTHING, db_column='id_tmp_lahir',
-        blank=True, null=True)
-    tgl_lahir = models.DateTimeField(blank=True, null=True)
+        blank=True, null=True, verbose_name="Tempat Lahir")
+    tgl_lahir = models.DateTimeField(
+        blank=True, null=True, verbose_name="Tanggal Lahir")
     # id_agama = models.ForeignKey(
     #     Agama, models.DO_NOTHING, db_column='id_agama', blank=True, null=True)
     # alamat = models.CharField(max_length=-1, blank=True, null=True)
@@ -214,7 +200,7 @@ class Pasien(models.Model):
     rw = models.CharField(max_length=2, blank=True, null=True)
     id_kelurahan = models.ForeignKey(
         Kelurahan, models.DO_NOTHING, db_column='id_kelurahan',
-        blank=True, null=True)
+        blank=True, null=True, verbose_name="Kelurahan")
     # kode_pos = models.CharField(max_length=5, blank=True, null=True)
     # id_pekerjaan = models.ForeignKey(
     #     Pekerjaan, models.DO_NOTHING, db_column='id_pekerjaan',
@@ -293,7 +279,8 @@ class Ruangan(models.Model):
     id = models.CharField(primary_key=True, max_length=3, db_column="id")
     nama = models.CharField(max_length=30, db_column="nama")
     id_instalasi = models.ForeignKey(
-        Instalasi, models.DO_NOTHING, db_column="id_instalasi")
+        Instalasi, models.DO_NOTHING, db_column="id_instalasi",
+        verbose_name="Instalasi")
     
     def __str__(self) -> str:
         return f"{self.nama}"
@@ -317,7 +304,8 @@ class Kamar(models.Model):
     id = models.CharField(primary_key=True, max_length=4, db_column="id")
     nama = models.CharField(max_length=30, db_column="nama")
     id_ruangan = models.ForeignKey(
-        Ruangan, models.DO_NOTHING, db_column="id_ruangan")
+        Ruangan, models.DO_NOTHING, db_column="id_ruangan",
+        verbose_name="Ruangan")
     
     def __str__(self) -> str:
         return f"{self.nama}"
@@ -341,7 +329,8 @@ class TempatTidur(models.Model):
     id = models.CharField(primary_key=True, max_length=4, db_column="id")
     nama = models.CharField(max_length=10, db_column="nama")
     id_kamar = models.ForeignKey(
-        Kamar, models.DO_NOTHING, db_column="id_kamar")
+        Kamar, models.DO_NOTHING, db_column="id_kamar",
+        verbose_name="Kamar")
     
     def __str__(self) -> str:
         return f"{self.nama}"
@@ -400,14 +389,18 @@ class Registrasi(models.Model):
     id = models.AutoField(primary_key=True, db_column="id")
     norm = models.ForeignKey(
         Pasien, models.DO_NOTHING, 
-        db_column="id_pasien", to_field='nocm')
+        db_column="id_pasien", to_field='nocm',
+        verbose_name="Pasien")
     # id_penjamin = models.ForeignKey(
     #     Penjamin, models.DO_NOTHING, db_column="id_penjamin")
     id_kelas = models.ForeignKey(
-        KelasPelayanan, models.DO_NOTHING, db_column="id_kelas")
-    tglregistrasi = models.DateTimeField(db_column="tglpendaftaran")
-    tglpulang = models.DateTimeField(db_column="tglpulang", 
-                                     null=True, blank=True)
+        KelasPelayanan, models.DO_NOTHING, db_column="id_kelas",
+        verbose_name="Kelas Pelayanan")
+    tglregistrasi = models.DateTimeField(
+        db_column="tglpendaftaran", verbose_name="Tanggal Registrasi")
+    tglpulang = models.DateTimeField(
+        db_column="tglpulang", null=True, blank=True,
+        verbose_name="Tanggal Pulang")
 
     created_at = models.DateTimeField(
         auto_now_add=True, blank=True, null=True)
@@ -436,11 +429,15 @@ class PemakaianKamar(models.Model):
     """
     id = models.AutoField(primary_key=True, db_column="id")
     id_registrasi = models.ForeignKey(
-        Registrasi, models.DO_NOTHING, db_column="id_pendaftaran")
-    tglmasuk = models.DateTimeField(auto_now_add=True)
-    tglkeluar = models.DateTimeField(blank=True, null=True)
+        Registrasi, models.DO_NOTHING, db_column="id_pendaftaran",
+        verbose_name="Nomor Registrasi")
+    tglmasuk = models.DateTimeField(
+        auto_now_add=True, verbose_name="Tanggal Masuk")
+    tglkeluar = models.DateTimeField(
+        blank=True, null=True, verbose_name="Tanggal Keluar")
     id_tempattidur = models.ForeignKey(
-        TempatTidur, models.DO_NOTHING, db_column='id_tempattidur',)
+        TempatTidur, models.DO_NOTHING, db_column='id_tempattidur',
+        verbose_name="Tempat Tidur")
     
     created_at = models.DateTimeField(
         auto_now_add=True, blank=True, null=True)
@@ -468,7 +465,8 @@ class SurveiKepuasanMasyarakat(models.Model):
     """
     id = models.AutoField(primary_key=True, db_column='id')
     id_registrasi = models.ForeignKey(
-        Registrasi, models.DO_NOTHING, db_column="id_pendaftaran")
+        Registrasi, models.DO_NOTHING, db_column="id_pendaftaran",
+        verbose_name="Nomor Registrasi")
     fasilitas_rate = models.IntegerField()
     perawat_rate = models.IntegerField()
     dokter_rate = models.IntegerField()
