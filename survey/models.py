@@ -472,6 +472,8 @@ class SurveiKepuasanMasyarakat(models.Model):
     dokter_rate = models.IntegerField()
     farmasi_rate = models.IntegerField()
     komentar = models.TextField(blank=True, null=True)
+    komentar_suara = models.FileField(upload_to='survey/voices/',
+                                      null=True)
 
     created_at = models.DateTimeField(
         auto_now_add=True, blank=True, null=True)
