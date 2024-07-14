@@ -1,5 +1,13 @@
 from django.contrib import admin
+from django.utils import timezone
+from django.urls import reverse
+from django.db.models import QuerySet
+from django.utils.html import format_html
 from survey import models
+from survey.controllers.surveys import get_voice_file
+from rangefilter.filters import DateTimeRangeFilter
+from admincharts.admin import AdminChartMixin
+from admincharts.utils import months_between_dates
 # Register your models here.
 
 admin.site.register([
@@ -94,13 +102,115 @@ class PemakaianKamarAdmin(admin.ModelAdmin):
 
     
 @admin.register(models.SurveiKepuasanMasyarakat)
-class SurveiKepuasanMasyarakatAdmin(admin.ModelAdmin):
+class SurveiKepuasanMasyarakatAdmin(AdminChartMixin, admin.ModelAdmin):
+    # Chartsj
+    def get_list_chart_data(
+            self, queryset: QuerySet[models.SurveiKepuasanMasyarakat]):
+        if not queryset:
+            return {}
+
+        # Cannot reorder the queryset at this point
+        earliest = min([x.created_at for x in queryset])
+
+        labels = []
+        farmasi_totals = []
+        perawat_totals = []
+        dokter_totals = []
+        fasilitas_totals = []
+        for b in months_between_dates(earliest, timezone.now()):
+            labels.append(b.strftime("%b %Y"))
+            farmasi_totals.append(
+                sum(
+                    [
+                        x.farmasi_rate
+                        for x in queryset
+                        if x.created_at.year == b.year and x.created_at.month == b.month
+                    ]
+                )
+            )
+            fasilitas_totals.append(
+                sum(
+                    [
+                        x.fasilitas_rate
+                        for x in queryset
+                        if x.created_at.year == b.year and x.created_at.month == b.month
+                    ]
+                )
+            )
+            perawat_totals.append(
+                sum(
+                    [
+                        x.perawat_rate
+                        for x in queryset
+                        if x.created_at.year == b.year and x.created_at.month == b.month
+                    ]
+                )
+            )
+            dokter_totals.append(
+                sum(
+                    [
+                        x.dokter_rate
+                        for x in queryset
+                        if x.created_at.year == b.year and x.created_at.month == b.month
+                    ]
+                )
+            )
+
+        return {
+            "labels": labels,
+            "datasets": [
+                {"label": "Fasilitas", "data": fasilitas_totals, "backgroundColor": "#B4B4B4"},
+                {"label": "Perawat", "data": perawat_totals, "backgroundColor": "#EB4FD8"},
+                {"label": "Dokter", "data": dokter_totals, "backgroundColor": "#4472C4"},
+                {"label": "Farmasi", "data": farmasi_totals, "backgroundColor": "#F07F46"},
+            ],
+        }
+    
+    def get_list_chart_queryset(self, changelist):
+        return changelist.queryset
+    
+
     list_display = [x.attname.replace(
         'survey.SurveiKepuasanMasyarakat.', ''
     ) for x in models.SurveiKepuasanMasyarakat._meta.fields]
-    # list_filter = (('mode', DateTimeRangeFilter),)
+    list_display = [
+        'id', 'get_registrasi',
+        'fasilitas_rate', 'perawat_rate', 'dokter_rate', 'farmasi_rate',
+        'komentar', 'get_voice', 'created_at', 'get_action']
+    list_filter = (('created_at', DateTimeRangeFilter),)
     search_fields = [x.attname.replace(
         'survey.SurveiKepuasanMasyarakat.', ''
     ) for x in models.SurveiKepuasanMasyarakat._meta.fields if (
         '_id' not in x.attname)]
+    @admin.display(ordering='id_registrasi__id',
+                   description='Registrasi Pasien')
+    def get_registrasi(self, obj: models.SurveiKepuasanMasyarakat):
+        return str(
+            f"{obj.id_registrasi.id} "
+            + f"{obj.id_registrasi.norm.nocm} "
+            + f"{obj.id_registrasi.norm.nama}, "
+            # + f"Kelas {obj.id_tempattidur.id_kamar.id_ruangan}"
+            )
+    
+    @admin.display(ordering='komentar',
+                   description='Komentar Suara')
+    def get_voice(self, obj: models.SurveiKepuasanMasyarakat):
+        # print('obj.komentar_suara.name is not None', obj.komentar_suara.name != "", len(obj.komentar_suara.name))
+        if (isinstance(obj.komentar_suara.name, str
+                       ) and obj.komentar_suara.name != ""
+            ) and obj.komentar_suara.name is not None:
+            return format_html(f'<audio controls name="media">'
+                            +f'<source src="{obj.komentar_suara.url}" '
+                            +'></audio>')
+        else:
+            return "Tidak ada file komentar suara"
+        
+
+    @admin.display(ordering='komentar',
+                   description='Aksi')
+    def get_action(self, obj: models.SurveiKepuasanMasyarakat):
+        return format_html(str(
+            f'<a href="{reverse("survey-stt-with-id", args=[obj.id,])}"'
+            +' class="button btn btn-primary">SkT</a>'
+        ))
     list_per_page = 10
