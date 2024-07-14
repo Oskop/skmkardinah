@@ -71,7 +71,7 @@ def predict_voice_text(filename):
 
         recognizer.input_finished()
         print(recognizer.text)
-        thetext = recognizer.text
+        thetext = str(recognizer.text).replace('|', ' ')
         recognizer.reset()
         return thetext, True
     else:
