@@ -1,9 +1,11 @@
-from django.urls import path
+from django.urls import path, re_path
 from survey.views import (
     survey_index, survey_input,
     current_survey_environment_by_norm,
     stt_survey)
 from survey.apps import SurveyConfig
+from survey.select2 import (
+    KelurahanAutocomplete, KotaKabAutocomplete)
 
 urlpatterns = [
     path("home/", survey_index, name="survey-home"),
@@ -17,4 +19,15 @@ urlpatterns = [
     path("riwayatpelayanan/<str:norm>", 
          current_survey_environment_by_norm,
          name="survey-riwayat-pelayanan-with-norm"),
+    
+    re_path(
+        r'kelurahan-autocomplete/$',
+        KelurahanAutocomplete.as_view(),
+        name='kelurahan-autocomplete',
+    ),
+    re_path(
+        r'kotakab-autocomplete/$',
+        KotaKabAutocomplete.as_view(),
+        name='kotakab-autocomplete',
+    ),
 ]

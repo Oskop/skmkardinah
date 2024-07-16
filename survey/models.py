@@ -119,7 +119,9 @@ class Kelurahan(models.Model):
         verbose_name_plural = 'Kelurahan'
 
     def __str__(self):
-        return r"{}".format(self.nama)
+        return r"{}, {}, {}".format(
+            self.nama, self.id_kecamatan.nama,
+            self.id_kecamatan.id_kotakab.nama)
 
 
 class Kotakab(models.Model):
@@ -174,7 +176,6 @@ class Pasien(models.Model):
             id_kelurahan: ForeignKey(
                 Kelurahan, models.DO_NOTHING, db_column='id_kelurahan',
                 blank=True, null=True)
-            kode_pos: CharField(max_length=5, blank=True, null=True)
             created_at: DateTimeField(blank=True, null=True)
             deleted_at: DateTimeField(blank=True, null=True)
             nama: CharField(max_length=60, blank=True, null=True)

@@ -1,9 +1,13 @@
+from django.contrib.auth.models import Group
 from django.contrib import admin
 from django.utils import timezone
 from django.urls import reverse
 from django.db.models import QuerySet
 from django.utils.html import format_html
 from survey import models
+from survey.forms import (
+    PasienForms, RegistrasiForms, PemakaianKamarForms,
+    SurveiKepuasanMasyarakatForms)
 from survey.controllers.surveys import get_voice_file
 from rangefilter.filters import DateTimeRangeFilter
 from admincharts.admin import AdminChartMixin
@@ -16,6 +20,8 @@ admin.site.register([
     models.Kotakab,
     models.Provinsi,
     models.TempatTidur])
+
+admin.site.unregister(Group)
 
 
 @admin.register(models.Ruangan)
@@ -47,6 +53,7 @@ class PasienAdmin(admin.ModelAdmin):
         'survey.Pasien.', ''
     ) for x in models.Pasien._meta.fields if (
         '_id' not in x.attname)]
+    form = PasienForms
     
     # @admin.display(ordering='id_tmp_lahir__nama',
     #                description='Tempat Lahir')
@@ -76,6 +83,7 @@ class RegistrasiAdmin(admin.ModelAdmin):
     ) for x in models.Registrasi._meta.fields if (
         '_id' not in x.attname)]
     list_per_page = 10
+    form = RegistrasiForms
 
 
 @admin.register(models.PemakaianKamar)
@@ -100,9 +108,19 @@ class PemakaianKamarAdmin(admin.ModelAdmin):
     
     list_per_page = 10
 
+    form = PemakaianKamarForms
+
     
 @admin.register(models.SurveiKepuasanMasyarakat)
 class SurveiKepuasanMasyarakatAdmin(AdminChartMixin, admin.ModelAdmin):
+    # This will help you to disbale add functionality
+    def has_add_permission(self, request):
+        return False
+
+    # This will help you to disable delete functionaliyt
+    def has_delete_permission(self, request, obj=None):
+        return False
+    
     # Chartsj
     def get_list_chart_data(
             self, queryset: QuerySet[models.SurveiKepuasanMasyarakat]):
@@ -214,3 +232,5 @@ class SurveiKepuasanMasyarakatAdmin(AdminChartMixin, admin.ModelAdmin):
             +' class="button btn btn-primary">SkT</a>'
         ))
     list_per_page = 10
+    
+    form = SurveiKepuasanMasyarakatForms
