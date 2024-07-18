@@ -401,9 +401,16 @@
                     console.log(respjson)
                     if (respjson.success) {
                         alert("Data Berhasil disimpan.")
-                        document.getElementById('noregistrasi').value = ""
+                        window.open('?', '_self');
+                        /* document.getElementById('noregistrasi').value = ""
                         document.getElementById('norm').value = ""
                         document.getElementById('namaruangan').value = ""
+                        document.getElementById('comments').value = ""
+                        document.querySelector('input[name="fasilitas-rating"]:checked').checked = false;
+                        document.querySelector('input[name="farmasi-rating"]:checked').checked = false;
+                        document.querySelector('input[name="perawat-rating"]:checked').checked = false;
+                        document.querySelector('input[name="dokter-rating"]:checked').checked = false;
+                        */
                     } else {
                         alert(respjson.error)
                     }
