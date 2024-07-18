@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'survey',
     "admincharts",
     "rangefilter",
+    "django_object_actions",
 ]
 
 MIDDLEWARE = [
