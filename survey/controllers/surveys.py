@@ -122,8 +122,10 @@ def input_survey(id_registrasi, post, files):
                 komentar=post.get('komentar', None),
             )
             thesurvey.save()
+            print("saving survey without file")
             if thesurvey.id is not None:
                 success = True
+                print("survey saved without file")
                 print(files.get('voice'))
                 if files.get('voice'):
                     print(handle_voice_file(thesurvey, files.get('voice')))
@@ -131,6 +133,7 @@ def input_survey(id_registrasi, post, files):
             error = "Id Registrasi tidak ditemukan"
         except Exception as e:
             error = e.__str__()
+            print(error)
     else:
         error = "id_registrasi tidak terkirim"
     return success, error
