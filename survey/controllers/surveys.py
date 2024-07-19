@@ -1,6 +1,9 @@
 from survey.models import SurveiKepuasanMasyarakat, Registrasi
 from survey.controllers.sherpa import predict_voice_text, ogg_to_wav
+from survey.filters import export_to_pdf_survey
 from django.core.files import File
+from django.http import HttpResponse
+from django.http.request import HttpRequest
 import pathlib
 from datetime import datetime
 import base64
@@ -137,3 +140,17 @@ def input_survey(id_registrasi, post, files):
     else:
         error = "id_registrasi tidak terkirim"
     return success, error
+
+
+def laporan_export_pdf(
+        request: HttpRequest, dari: str = '', ke: str = ''):
+    surveys = SurveiKepuasanMasyarakat.objects
+    if dari != '' and ke != '':
+        surveys = surveys.filter(created_at__gte=dari, created_at__lte=ke)
+    else:
+        surveys = surveys.all()
+    pdfnya, filename = export_to_pdf_survey(request=request, queryset=surveys)
+    response: HttpResponse = HttpResponse(
+        pdfnya, content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="' + filename + '"'
+    return response
