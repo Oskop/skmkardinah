@@ -2,6 +2,7 @@ from django.contrib.auth.models import Group
 from django.contrib import admin
 from django.utils import timezone
 from django.urls import reverse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.db.models import QuerySet
 from django.utils.html import format_html
 from survey import models
@@ -9,9 +10,13 @@ from survey.forms import (
     PasienForms, RegistrasiForms, PemakaianKamarForms,
     SurveiKepuasanMasyarakatForms)
 from survey.controllers.surveys import get_voice_file
+from survey.filters import (
+    ReportExportFilter, export_to_pdf_survey)
 from rangefilter.filters import DateTimeRangeFilter
 from admincharts.admin import AdminChartMixin
 from admincharts.utils import months_between_dates
+from django_object_actions import (
+    DjangoObjectActions, action, takes_instance_or_queryset)
 # Register your models here.
 
 admin.site.register([
@@ -110,9 +115,47 @@ class PemakaianKamarAdmin(admin.ModelAdmin):
 
     form = PemakaianKamarForms
 
-    
 @admin.register(models.SurveiKepuasanMasyarakat)
-class SurveiKepuasanMasyarakatAdmin(AdminChartMixin, admin.ModelAdmin):
+class SurveiKepuasanMasyarakatAdmin(
+    AdminChartMixin, admin.ModelAdmin, 
+    # DjangoObjectActions
+    ):
+    
+    # actions = [laporan,]
+    change_list_template = "chartjs/djangoobjecttools_change_list.html"
+
+
+    # def changelist_view(self, request, extra_context=None):
+    #     extra_context = extra_context or {}
+    #     # extra_context.update(
+    #     #     {
+    #     #         "objectactions": [
+    #     #             self._get_tool_dict(action)
+    #     #             for action in self.get_changelist_actions(request)
+    #     #         ],
+    #     #         "tools_view_name": self.tools_view_name,
+    #     #     }
+    #     # )
+    #     response = super().changelist_view(request, extra_context=extra_context)
+
+    #     # This could be a redirect and not have context_data
+    #     if not hasattr(response, "context_data"):
+    #         return response
+
+    #     if "cl" in response.context_data:
+    #         changelist = response.context_data["cl"]
+    #         chart_queryset = self.get_list_chart_queryset(changelist)
+    #         response.context_data["adminchart_queryset"] = chart_queryset
+    #         response.context_data[
+    #             "adminchart_chartjs_config"
+    #         ] = self.get_list_chart_config(chart_queryset)
+    #     else:
+    #         response.context_data["adminchart_queryset"] = None
+    #         response.context_data["adminchart_chartjs_config"] = None
+
+    #     return response
+
+
     # This will help you to disbale add functionality
     def has_add_permission(self, request):
         return False
@@ -187,15 +230,16 @@ class SurveiKepuasanMasyarakatAdmin(AdminChartMixin, admin.ModelAdmin):
     def get_list_chart_queryset(self, changelist):
         return changelist.queryset
     
-
+    
     list_display = [x.attname.replace(
         'survey.SurveiKepuasanMasyarakat.', ''
     ) for x in models.SurveiKepuasanMasyarakat._meta.fields]
     list_display = [
         'id', 'get_registrasi',
         'fasilitas_rate', 'perawat_rate', 'dokter_rate', 'farmasi_rate',
-        'komentar', 'get_voice', 'created_at', 'get_action']
-    list_filter = (('created_at', DateTimeRangeFilter),)
+        'komentar', 'get_voice', 'created_at', 'get_stt']
+    list_filter = (('created_at', DateTimeRangeFilter),
+                   ReportExportFilter)
     search_fields = [x.attname.replace(
         'survey.SurveiKepuasanMasyarakat.', ''
     ) for x in models.SurveiKepuasanMasyarakat._meta.fields if (
@@ -226,7 +270,7 @@ class SurveiKepuasanMasyarakatAdmin(AdminChartMixin, admin.ModelAdmin):
 
     @admin.display(ordering='komentar',
                    description='Aksi')
-    def get_action(self, obj: models.SurveiKepuasanMasyarakat):
+    def get_stt(self, obj: models.SurveiKepuasanMasyarakat):
         return format_html(str(
             f'<a href="{reverse("survey-stt-with-id", args=[obj.id,])}"'
             +' class="button btn btn-primary">SkT</a>'
@@ -234,3 +278,19 @@ class SurveiKepuasanMasyarakatAdmin(AdminChartMixin, admin.ModelAdmin):
     list_per_page = 10
     
     form = SurveiKepuasanMasyarakatForms
+    actions = ["laporan_survey_pdf",]
+
+    @admin.action(description="Laporan Survey")
+    def laporan_survey_pdf(self, request, queryset):
+        print('ada redirect atau tidak?')
+        print(export_to_pdf_survey(request, queryset))
+        return HttpResponseRedirect('/')
+
+
+    # @action(
+    #     label="Unduh Laporan (pdf)",  # optional
+    #     description="Laporan Survey dalam format PDF" # optional
+    # )
+    
+    # change_actions = ('laporan', )
+    # changelist_actions = ('laporan_survey_pdf', )
