@@ -1,10 +1,13 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.urls import reverse
 from django.http.request import HttpRequest
-from django.http import (JsonResponse, HttpResponseRedirect)
+from django.http import (
+    JsonResponse, HttpResponseRedirect, HttpResponse)
 from survey.controllers.pasiens import get_pasien_by_norm
 from survey.controllers.kamars import get_pemakaiankamar_by
-from survey.controllers.surveys import (input_survey, skm_stt)
+from survey.controllers.surveys import (
+    input_survey, skm_stt, laporan_export_pdf)
 
 # Create your views here.
 def survey_index(request: HttpRequest):
@@ -67,4 +70,14 @@ def stt_survey(request: HttpRequest, id_skm: int = None):
             messages.error(request, "Tidak diizinkan")
     else:
         messages.warning(request, "Nomor Registrasi Pasien tidak terkirim")
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+
+def laporan_export_endpoint(request: HttpRequest):
+    if request.method == "GET":
+        dari = request.GET.get('dari', '')
+        ke = request.GET.get('ke', '')
+        return laporan_export_pdf(request, dari, ke)
+    else:
+        messages.error(request, "Metode tidak diperbolehkan")
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
