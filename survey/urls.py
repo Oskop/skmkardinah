@@ -2,7 +2,7 @@ from django.urls import path, re_path
 from survey.views import (
     survey_index, survey_input,
     current_survey_environment_by_norm,
-    stt_survey)
+    stt_survey, laporan_export_endpoint)
 from survey.apps import SurveyConfig
 from survey.select2 import (
     KelurahanAutocomplete, KotaKabAutocomplete)
@@ -13,6 +13,9 @@ urlpatterns = [
     path("kirim/<int:id_registrasi>", survey_input, name="survey-kirim-with-id"),
     path("stt/", stt_survey, name="survey-stt"),
     path("stt/<int:id_skm>", stt_survey, name="survey-stt-with-id"),
+    path("laporan/export/pdf", 
+         laporan_export_endpoint,
+         name="survey-laporan-export-pdf"),
     path("riwayatpelayanan/", 
          current_survey_environment_by_norm,
          name="survey-riwayat-pelayanan"),
