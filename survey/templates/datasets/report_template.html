@@ -1,0 +1,86 @@
+{% load static %}
+<style media="screen">
+  .dataframe {
+    margin-left:auto;
+    margin-right:auto;
+    border: 0;
+  }
+  .ttdkiri {
+    padding-right: 90px;
+  }
+  .ttdkanan {
+    padding-left: 90px;
+  }
+  th, tr {
+    text-align: center;
+  }
+  .container {
+    display: flex;
+    align-items: center;
+    justify-content: center
+  }
+
+  .container img {
+    max-width: 190px;
+  }
+
+  /* .container .text {
+    font-size: 70px;
+  } */
+</style>
+<div class="container">
+  <!-- <div class="image">
+    <img src="{{ logo_kardinah }}" alt="">
+  </div> -->
+  <div style="text-align:center;">
+    <h3 style="font-size: 30px; margin-bottom:0px;">RSUD KARDINAH KOTA TEGAL</h3>
+    <h4 style="font-size: 25px; margin-bottom:0px; margin-top: 0px;">Survei Kepuasan Masyarakat</h4>
+    <p style="margin-bottom:0px; margin-top: 0px;">Jl. KS Tubun No.4, Kota Tegal Tegal, Jawa Tengah, Indonesia 52124.</p>
+    <p style="margin-top:0px;">Phone: 0283-350377. Email: rsukardinahtegal@gmail.com.</p>
+  </div>
+</div>
+
+
+<div style="text-align:center;">
+  <h4>LAPORAN SURVEI KEPUASAN MASYARAKAT</h4>
+  <h5>Tanggal: {% if dari and ke %}
+  {{ dari }} {{ ke }}
+  {% else %}
+  
+  {% endif %}
+  </h5>
+</div>
+
+
+<div>
+  {% include 'datasets/rawdataset.html' %}
+</div>
+
+<!-- <br>
+<table class="dataframe">
+  <thead>
+    <tr>
+      <th class="ttdkiri" style="margin:auto"></th>
+      <th class="ttdkanan" style="margin:auto">{{ tanggal }}</th>
+    </tr>
+    <tr>
+      <th class="ttdkiri">Disetujui Manajer</th>
+      <th class="ttdkanan">Bagian Purchasing</th>
+    </tr>
+    <tr style="color:white">
+      <th> asdas </th>
+    </tr>
+    <tr style="color:white">
+      <th> asdas </th>
+    </tr>
+    <tr style="color:white">
+      <th> asdas </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="ttdkiri" style="margin:auto">______________________________</td>
+      <td class="ttdkanan" style="margin:auto">______________________________</td>
+    </tr>
+  </tbody>
+</table> -->
