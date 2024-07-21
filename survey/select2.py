@@ -24,6 +24,10 @@ class PasienAutocomplete(autocomplete.Select2QuerySetView):
     class Meta:
         model = Pasien
 
+    def get_result_value(self, result: Pasien):
+        """Return the value of a result."""
+        return str(result.nocm)
+
     def get_queryset(self):
         if not self.request.user.is_authenticated:
             return Pasien.objects.none()
