@@ -2,13 +2,16 @@ from django.contrib.auth.models import Group
 from django.contrib import admin
 from django.utils import timezone
 from django.urls import reverse
+from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 from django.db.models import QuerySet
 from django.utils.html import format_html
 from survey import models
 from survey.forms import (
+    KotakabForms, KecamatanForms, KelurahanForms,
     PasienForms, RegistrasiForms, PemakaianKamarForms,
-    SurveiKepuasanMasyarakatForms)
+    SurveiKepuasanMasyarakatForms, RuanganForms, KamarForms,
+    TempatTidurForms)
 from survey.controllers.surveys import get_voice_file
 from survey.filters import (
     ReportExportFilter, export_to_pdf_survey)
@@ -20,27 +23,106 @@ from django_object_actions import (
 # Register your models here.
 
 admin.site.register([
-    models.Instalasi, models.Kamar, models.Kecamatan,
-    models.KelasPelayanan, models.Kelurahan,
-    models.Kotakab,
-    models.Provinsi,
-    models.TempatTidur])
+    models.KelasPelayanan,])
 
 admin.site.unregister(Group)
+admin.site.unregister(User)
 
 
-@admin.register(models.Ruangan)
-class RuanganAdmin(admin.ModelAdmin):
+class CustomUserAdmin(admin.ModelAdmin):
+    exclude = ('user_permissions', 'groups')
+
+
+admin.site.register(User, CustomUserAdmin)
+
+
+@admin.register(models.Provinsi)
+class ProvinsiAdmin(admin.ModelAdmin):
     # list_display = [x.attname.replace(
-    #     'survey.Ruangan.', ''
-    # ) for x in models.Ruangan._meta.fields]
-    list_display = ['id', 'nama', 'id_instalasi']
+    #     'survey.Provinsi.', ''
+    # ) for x in models.Provinsi._meta.fields]
+    list_display = ['id', 'nama']
     # list_filter = (('mode', DateTimeRangeFilter),)
     search_fields = [x.attname.replace(
-        'survey.Ruangan.', ''
-    ) for x in models.Ruangan._meta.fields if (
+        'survey.Provinsi.', ''
+    ) for x in models.Provinsi._meta.fields if (
         '_id' not in x.attname)]
     list_per_page = 10
+
+
+@admin.register(models.Kotakab)
+class KotakabAdmin(admin.ModelAdmin):
+    # list_display = [x.attname.replace(
+    #     'survey.Kotakab.', ''
+    # ) for x in models.Kotakab._meta.fields]
+    list_display = ['id', 'nama', 'provinsi']
+    # list_filter = (('mode', DateTimeRangeFilter),)
+    search_fields = [x.attname.replace(
+        'survey.Kotakab.', ''
+    ) for x in models.Kotakab._meta.fields if (
+        '_id' not in x.attname)]
+    
+    @admin.display(ordering='id_provinsi__nama',
+                   description='Provinsi')
+    def provinsi(self, obj: models.Kotakab):
+        return obj.id_provinsi.nama
+    list_per_page = 10
+    form = KotakabForms
+
+
+@admin.register(models.Kecamatan)
+class KecamatanAdmin(admin.ModelAdmin):
+    # list_display = [x.attname.replace(
+    #     'survey.Kecamatan.', ''
+    # ) for x in models.Kecamatan._meta.fields]
+    list_display = ['id', 'nama', 'kota_kabupaten']
+    # list_filter = (('mode', DateTimeRangeFilter),)
+    search_fields = [x.attname.replace(
+        'survey.Kecamatan.', ''
+    ) for x in models.Kecamatan._meta.fields if (
+        '_id' not in x.attname)]
+    
+    @admin.display(ordering='id_kotakab__nama',
+                   description='Kota/Kabupaten')
+    def kota_kabupaten(self, obj: models.Kecamatan):
+        return obj.id_kotakab.nama
+    list_per_page = 10
+    form = KecamatanForms
+
+
+@admin.register(models.Kelurahan)
+class KelurahanAdmin(admin.ModelAdmin):
+    # list_display = [x.attname.replace(
+    #     'survey.Kelurahan.', ''
+    # ) for x in models.Kelurahan._meta.fields]
+    list_display = ['id', 'nama', 'kecamatan']
+    # list_filter = (('mode', DateTimeRangeFilter),)
+    search_fields = [x.attname.replace(
+        'survey.Kelurahan.', ''
+    ) for x in models.Kelurahan._meta.fields if (
+        '_id' not in x.attname)]
+    
+    @admin.display(ordering='id_kecamatan__nama',
+                   description='Kecamatan')
+    def kecamatan(self, obj: models.Kelurahan):
+        return obj.id_kecamatan.nama
+    list_per_page = 10
+    form = KelurahanForms
+
+
+@admin.register(models.Instalasi)
+class InstalasiAdmin(admin.ModelAdmin):
+    list_display = [x.attname.replace(
+        'survey.Instalasi.', ''
+    ) for x in models.Instalasi._meta.fields]
+    # list_display = ['id', 'nama', 'id_instalasi']
+    # list_filter = (('mode', DateTimeRangeFilter),)
+    search_fields = [x.attname.replace(
+        'survey.Instalasi.', ''
+    ) for x in models.Instalasi._meta.fields if (
+        '_id' not in x.attname)]
+    list_per_page = 10
+
 
 @admin.register(models.Pasien)
 class PasienAdmin(admin.ModelAdmin):
@@ -107,9 +189,10 @@ class PemakaianKamarAdmin(admin.ModelAdmin):
     @admin.display(ordering='id_tempattidur__id',
                    description='Tempat Tidur')
     def get_tempattidur(self, obj: models.PemakaianKamar):
-        return str(
-            f"Kasur {obj.id_tempattidur.nama}, " + f"Kamar {obj.id_tempattidur.id_kamar}, "
-            + f"Ruangan {obj.id_tempattidur.id_kamar.id_ruangan}")
+        return format_html(str(
+            f"Tempat Tidur: {obj.id_tempattidur.nama}, <br>" +
+            f"Kamar: {obj.id_tempattidur.id_kamar.nama}, <br>"
+            + f"Ruangan: {obj.id_tempattidur.id_kamar.id_ruangan.nama}"))
     
     list_per_page = 10
 
@@ -294,3 +377,80 @@ class SurveiKepuasanMasyarakatAdmin(
     
     # change_actions = ('laporan', )
     # changelist_actions = ('laporan_survey_pdf', )
+
+
+@admin.register(models.Ruangan)
+class RuanganAdmin(admin.ModelAdmin):
+    # list_display = [x.attname.replace(
+    #     'survey.Ruangan.', ''
+    # ) for x in models.Ruangan._meta.fields]
+    list_display = ['id', 'nama', 'instalasi']
+    # list_filter = (('mode', DateTimeRangeFilter),)
+    search_fields = [x.attname.replace(
+        'survey.Ruangan.', ''
+    ) for x in models.Ruangan._meta.fields if (
+        '_id' not in x.attname)]
+
+    @admin.display(ordering='id_instalasi__nama',
+                   description='Instalasi')
+    def instalasi(self, obj: models.Ruangan):
+        return obj.id_instalasi.nama
+    list_per_page = 10
+    form = RuanganForms
+
+
+@admin.register(models.Kamar)
+class KamarAdmin(admin.ModelAdmin):
+    # list_display = [x.attname.replace(
+    #     'survey.Kamar.', ''
+    # ) for x in models.Kamar._meta.fields]
+    list_display = ['id', 'nama', 'ruangan', 'instalasi']
+    # list_filter = (('mode', DateTimeRangeFilter),)
+    search_fields = [x.attname.replace(
+        'survey.Kamar.', ''
+    ) for x in models.Kamar._meta.fields if (
+        '_id' not in x.attname)]
+
+    @admin.display(ordering='id_ruangan__nama',
+                   description='Ruangan')
+    def ruangan(self, obj: models.Kamar):
+        return obj.id_ruangan.nama
+
+    @admin.display(ordering='id_ruangan__id_instalasi__nama',
+                   description='Instalasi')
+    def instalasi(self, obj: models.Kamar):
+        return obj.id_ruangan.id_instalasi.nama
+    
+    list_per_page = 10
+    form = KamarForms
+
+
+@admin.register(models.TempatTidur)
+class TempatTidurAdmin(admin.ModelAdmin):
+    # list_display = [x.attname.replace(
+    #     'survey.TempatTidur.', ''
+    # ) for x in models.TempatTidur._meta.fields]
+    list_display = ['id', 'nama', 'kamar', 'ruangan', 'instalasi']
+    # list_filter = (('mode', DateTimeRangeFilter),)
+    search_fields = [x.attname.replace(
+        'survey.TempatTidur.', ''
+    ) for x in models.TempatTidur._meta.fields if (
+        '_id' not in x.attname)]
+
+    @admin.display(ordering='id_kamar__nama',
+                   description='Ruangan')
+    def kamar(self, obj: models.TempatTidur):
+        return obj.id_kamar.nama
+    
+    @admin.display(ordering='id_kamar__id_ruangan__nama',
+                   description='Ruangan')
+    def ruangan(self, obj: models.TempatTidur):
+        return obj.id_kamar.id_ruangan.nama
+
+    @admin.display(ordering='id_kamar__id_ruangan__id_instalasi__nama',
+                   description='Instalasi')
+    def instalasi(self, obj: models.TempatTidur):
+        return obj.id_kamar.id_ruangan.id_instalasi.nama
+    
+    list_per_page = 10
+    form = TempatTidurForms
