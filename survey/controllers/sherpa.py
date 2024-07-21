@@ -5,6 +5,9 @@ import soundfile as sf
 import librosa
 # from pydub import AudioSegment as am
 from pathlib import Path
+from google_spell_checker import GoogleSpellChecker
+
+spell_checker = GoogleSpellChecker(lang="id")
 
 config_dir = 'sherpa-ncnn-pruned-transducer-stateless7-streaming-id'
 
@@ -22,6 +25,7 @@ recognizer = sherpa_ncnn.Recognizer(
 
 def ogg_to_wav(input_file_path, output_file_path, 
                frame_rate_output: int = 16000):
+    print("ogg_to_wav start")
     # Old Method
     # data, samplerate = sf.read(input_file_path)
     # sf.write(output_file_path, data, samplerate)
@@ -38,6 +42,7 @@ def ogg_to_wav(input_file_path, output_file_path,
     # sound = sound.set_frame_rate(16000)
     # sound.export(filepath, format='wav')
     print('ogg_to_wav', Path(output_file_path).exists())
+    print("ogg_to_wav end")
     return Path(output_file_path).exists()
 
 
@@ -61,7 +66,7 @@ def get_sample_rate(filename):
     return samples_float32
 
 
-def predict_voice_text(filename):
+def predict_voice_text(filename, correction: bool = True):
     samples_float32 = get_sample_rate(filename)
     if samples_float32 is not None:
         recognizer.accept_waveform(recognizer.sample_rate, samples_float32)
@@ -73,6 +78,10 @@ def predict_voice_text(filename):
         print(recognizer.text)
         thetext = str(recognizer.text).replace('|', ' ')
         recognizer.reset()
+        if correction:
+            is_correct, corrected = spell_checker.check(thetext)
+            if is_correct == False:
+                thetext = corrected
         return thetext, True
     else:
         return "cannot get sampling rate", False
