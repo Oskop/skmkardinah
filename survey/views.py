@@ -7,7 +7,8 @@ from django.http import (
 from survey.controllers.pasiens import get_pasien_by_norm
 from survey.controllers.kamars import get_pemakaiankamar_by
 from survey.controllers.surveys import (
-    input_survey, skm_stt, laporan_export_pdf)
+    input_survey, skm_stt, laporan_export_pdf,
+    handle_voice_direct,)
 
 # Create your views here.
 def survey_index(request: HttpRequest):
@@ -54,6 +55,26 @@ def survey_input(request: HttpRequest, id_registrasi = None):
             response["error"] = "Tidak diizinkan"
     else:
         response["error"] = "Nomor Registrasi Pasien tidak terkirim"
+    return JsonResponse(response)
+
+
+def survey_stt_direct(request: HttpRequest):
+    response = {"success": False, "error": "", "data": []}
+    if request.method == 'POST':
+        if request.POST.get('norm', '') != '' and request.FILES.get(
+            'voice') is not None:
+            result = handle_voice_direct(
+                request.FILES.get('voice'),
+                request.POST.get('norm', ''))
+            if result:
+                response["data"] = [result,]
+                response["success"] = True
+            else:
+                response["error"] = "gagal"
+        else:
+            response["error"] = "Nomor Rekam Medis Pasien tidak terkirim"
+    else:
+        response["error"] = "Tidak diizinkan"
     return JsonResponse(response)
 
 
