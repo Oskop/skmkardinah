@@ -90,7 +90,7 @@ class Kecamatan(models.Model):
     id = models.CharField(primary_key=True, max_length=7)
     id_kotakab = models.ForeignKey(
         'Kotakab', models.DO_NOTHING, db_column='id_kotakab',
-        blank=True, null=True)
+        blank=True, null=True, verbose_name="Kota/Kabupaten")
     # nama = models.CharField(max_length=-1, blank=True, null=True)
     nama = models.TextField(blank=True, null=True)
 
@@ -108,7 +108,7 @@ class Kelurahan(models.Model):
     id = models.CharField(primary_key=True, max_length=10)
     id_kecamatan = models.ForeignKey(
         Kecamatan, models.DO_NOTHING, db_column='id_kecamatan',
-        blank=True, null=True)
+        blank=True, null=True, verbose_name='Kecamatan')
     # nama = models.CharField(max_length=-1, blank=True, null=True)
     nama = models.TextField(blank=True, null=True)
 
@@ -128,7 +128,7 @@ class Kotakab(models.Model):
     id = models.CharField(primary_key=True, max_length=4)
     id_provinsi = models.ForeignKey(
         'Provinsi', models.DO_NOTHING, db_column='id_provinsi',
-        blank=True, null=True)
+        blank=True, null=True, verbose_name="Provinsi")
     # nama = models.CharField(max_length=-1, blank=True, null=True)
     nama = models.TextField(blank=True, null=True)
 
@@ -309,7 +309,7 @@ class Kamar(models.Model):
         verbose_name="Ruangan")
     
     def __str__(self) -> str:
-        return f"{self.nama}"
+        return f"{self.id_ruangan.nama}, {self.nama}"
 
     class Meta:
         managed = True
@@ -334,7 +334,8 @@ class TempatTidur(models.Model):
         verbose_name="Kamar")
     
     def __str__(self) -> str:
-        return f"{self.nama}"
+        return str(f"{self.nama}, {self.id_kamar.nama}, "
+                   + f"{self.id_kamar.id_ruangan.nama}")
 
     class Meta:
         managed = True
