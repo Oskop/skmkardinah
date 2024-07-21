@@ -71,6 +71,30 @@ def skm_stt(skm: SurveiKepuasanMasyarakat = None,
     return success, message
 
 
+def handle_voice_direct(f, norm):
+    parent_dir = 'media/'
+    voice_directory = 'survey/voices/'
+    destination_dir = parent_dir + voice_directory
+    pathlib.Path(destination_dir).mkdir(parents=True, exist_ok=True)
+    basefilename = str(
+        str(datetime.now().timestamp())
+        + '__' + norm)
+    filename = f"{basefilename}.ogg"
+    with open(str(destination_dir) + filename, "wb+") as destination:
+        for chunk in f.chunks():
+            destination.write(chunk)
+    if pathlib.Path(str(destination_dir) + filename).exists():
+        output_wav = filename[:-3] + "wav"
+        if ogg_to_wav(
+            str(destination_dir) + filename,
+            str(destination_dir) + output_wav):
+            result, success = predict_voice_text(
+                str(destination_dir) + output_wav)
+            if success:
+                return result
+    return None
+
+
 def handle_voice_file(skm: SurveiKepuasanMasyarakat, f, stt = False):
     message = ""
     parent_dir = 'media/'
