@@ -423,6 +423,51 @@
             }
         }
 
+
+        async function kirimSuaraAlihTeks(){
+            let formData = new FormData();
+            norm = document.getElementById('norm').value
+            csrf = document.getElementsByTagName('csrfmiddlewaretoken').value
+            if ((norm != null && norm != undefined && norm != ""
+            ) && (audioBlobFinished != undefined && audioBlobFinished != null && audioBlobFinished != "")) {
+                formData.append('voice', audioBlobFinished, 'voice.ogg')
+                formData.append('norm', norm)
+                formData.append('csrfmiddlewaretoken', document.querySelector('input[name="csrfmiddlewaretoken"]').value)
+                console.log(formData)
+                const req = fetch("{% url 'survey-stt-direct' %}", {
+                    method: "POST",
+                    body: formData,
+                })
+                req.then(async (response) => {
+                   let respjson = await response.json()
+                    console.log(respjson)
+                    if (respjson.success && respjson.data.length != 0) {
+                        alert("Berhasil mengubah suara ke teks.")
+                        document.getElementById('comments').value = respjson.data[0]
+                        /* document.getElementById('noregistrasi').value = ""
+                        document.getElementById('norm').value = ""
+                        document.getElementById('namaruangan').value = ""
+                        document.querySelector('input[name="fasilitas-rating"]:checked').checked = false;
+                        document.querySelector('input[name="farmasi-rating"]:checked').checked = false;
+                        document.querySelector('input[name="perawat-rating"]:checked').checked = false;
+                        document.querySelector('input[name="dokter-rating"]:checked').checked = false;
+                        */
+                    } else {
+                        alert(respjson.error)
+                    }
+                    return respjson 
+                }).catch(err=>{
+                    console.log(err)
+                })
+            } else {
+                if (norm == null || norm == undefined || norm == ""){
+                    alert("Silahkan Cek NoRM dan Rekam Ulang!")
+                } else if (audioBlobFinished == undefined || audioBlobFinished == null || audioBlobFinished == "") {
+                    alert("Silahkan Rekam Suara Anda!")
+                }
+            }
+        }
+
         async function getRequest(url) {
             const response = await fetch(url);
             const jsons = await response.json();
@@ -705,6 +750,7 @@
                     //...
                     playAudio(audioAsblob)
                     audioBlobFinished = audioAsblob
+                    kirimSuaraAlihTeks()
                 })
                 .catch(error => {
                     //Error handling structure
