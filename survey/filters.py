@@ -60,10 +60,10 @@ def export_to_pdf_survey(request, queryset):
     df.loc[len(df.index)] = [
         "",
         "Rata-rata",
-        round(df.loc[:, 'Fasilitas rate'].mean(), 2), # fasilitas
-        round(df.loc[:, 'Perawat rate'].mean(), 2),
-        round(df.loc[:, 'Dokter rate'].mean(), 2),
-        round(df.loc[:, 'Farmasi rate'].mean(), 2),
+        str(round(df.loc[:, 'Fasilitas rate'].mean(), 2)).replace('.', ','),
+        str(round(df.loc[:, 'Perawat rate'].mean(), 2)).replace('.', ','),
+        str(round(df.loc[:, 'Dokter rate'].mean(), 2)).replace('.', ','),
+        str(round(df.loc[:, 'Farmasi rate'].mean(), 2)).replace('.', ','),
         ""
     ]
     Path(thepath).parent.mkdir(exist_ok=True)
