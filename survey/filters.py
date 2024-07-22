@@ -56,12 +56,16 @@ def export_to_pdf_survey(request, queryset):
     df.loc[len(df.index)] = [
         "",
         "Rata-rata",
-        df.loc[:, 'Fasilitas rate'].mean(), # fasilitas
-        df.loc[:, 'Perawat rate'].mean(),
-        df.loc[:, 'Dokter rate'].mean(),
-        df.loc[:, 'Farmasi rate'].mean(),
+        round(df.loc[:, 'Fasilitas rate'].mean(), 2), # fasilitas
+        round(df.loc[:, 'Perawat rate'].mean(), 2),
+        round(df.loc[:, 'Dokter rate'].mean(), 2),
+        round(df.loc[:, 'Farmasi rate'].mean(), 2),
         ""
     ]
+    df['Fasilitas rate'] = df['Fasilitas rate'].astype(np.int8)
+    df['Perawat rate'] = df['Perawat rate'].astype(np.int8)
+    df['Dokter rate'] = df['Dokter rate'].astype(np.int8)
+    df['Farmasi rate'] = df['Farmasi rate'].astype(np.int8)
     Path(thepath).parent.mkdir(exist_ok=True)
     df.to_html(
         'survey/Templates/datasets/rawdataset.html',
