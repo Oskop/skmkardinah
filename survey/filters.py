@@ -53,6 +53,10 @@ def export_to_pdf_survey(request, queryset):
         ) or isinstance(lk, lookups.LessThanOrEqual):
             ke = format_date(lk.rhs.date(), 'full', locale='id')
     thepath = 'survey/templates/datasets/rawdataset.html'
+    df['Fasilitas rate'] = df['Fasilitas rate'].astype(np.int8)
+    df['Perawat rate'] = df['Perawat rate'].astype(np.int8)
+    df['Dokter rate'] = df['Dokter rate'].astype(np.int8)
+    df['Farmasi rate'] = df['Farmasi rate'].astype(np.int8)
     df.loc[len(df.index)] = [
         "",
         "Rata-rata",
@@ -62,10 +66,6 @@ def export_to_pdf_survey(request, queryset):
         round(df.loc[:, 'Farmasi rate'].mean(), 2),
         ""
     ]
-    df['Fasilitas rate'] = df['Fasilitas rate'].astype(np.int8)
-    df['Perawat rate'] = df['Perawat rate'].astype(np.int8)
-    df['Dokter rate'] = df['Dokter rate'].astype(np.int8)
-    df['Farmasi rate'] = df['Farmasi rate'].astype(np.int8)
     Path(thepath).parent.mkdir(exist_ok=True)
     df.to_html(
         'survey/Templates/datasets/rawdataset.html',
