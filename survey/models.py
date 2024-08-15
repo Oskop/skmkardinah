@@ -376,6 +376,52 @@ class KelasPelayanan(models.Model):
         verbose_name_plural = "Kelas-Kelas Pelayanan"
 
 
+class JenisPegawai(models.Model):
+    """Jenis Pegawai Model
+
+    Args:
+        models (**kwargs): (
+            nama: str(10)
+        )
+    """
+    id = models.CharField(primary_key=True, max_length=2, db_column="id")
+    nama = models.CharField(max_length=10, db_column="nama")
+
+    def __str__(self) -> str:
+        return f"{self.nama}"
+
+    class Meta:
+        managed = True
+        db_table = "jenis_pegawai"
+        verbose_name = "Jenis Pegawai"
+        verbose_name_plural = "Jenis-Jenis Pegawai"
+
+
+class Pegawai(models.Model):
+    """Pegawai Model
+
+    Args:
+        models (**kwargs): (
+            nama: str(10)
+
+        )
+    """
+    id = models.CharField(primary_key=True, max_length=10, db_column="id")
+    nama = models.CharField(max_length=10, db_column="nama")
+    jenis_pegawai = models.ForeignKey(
+        JenisPegawai, models.DO_NOTHING,
+        blank=True, null=True, verbose_name="Jenis Pegawai")
+
+    def __str__(self) -> str:
+        return f"{self.nama}"
+
+    class Meta:
+        managed = True
+        db_table = "pegawai"
+        verbose_name = "Pegawai"
+        verbose_name_plural = "Para Pegawai"
+
+
 class Registrasi(models.Model):
     """Registrasi Model
 
@@ -450,6 +496,41 @@ class PemakaianKamar(models.Model):
         db_table = "pemakaian_kamar"
         verbose_name = "Pemakaian Kamar"
         verbose_name_plural = "Riwayat Pemakaian Kamar"
+
+
+class Pelayanan(models.Model):
+    """Pelayanan yang diberikan kepada pasien Model
+
+    Args:
+        models (**kwargs): (
+            id_registrasi: Registrasi
+            id_
+            tglmasuk: datetime
+            tglkeluar: datetime
+            id_tempattidur: TempatTidur
+    """
+    id = models.AutoField(primary_key=True, db_column="id")
+    id_registrasi = models.ForeignKey(
+        Registrasi, models.DO_NOTHING, db_column="id_pendaftaran",
+        verbose_name="Nomor Registrasi")
+    tglmasuk = models.DateTimeField(
+        auto_now_add=True, verbose_name="Tanggal Masuk")
+    tglkeluar = models.DateTimeField(
+        blank=True, null=True, verbose_name="Tanggal Keluar")
+    id_tempattidur = models.ForeignKey(
+        TempatTidur, models.DO_NOTHING, db_column='id_tempattidur',
+        verbose_name="Tempat Tidur")
+
+    created_at = models.DateTimeField(
+        auto_now_add=True, blank=True, null=True)
+    deleted_at = models.DateTimeField(blank=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = "pelayanan"
+        verbose_name = "Pelayanan"
+        verbose_name_plural = "Pelayanan"
 
 
 class SurveiKepuasanMasyarakat(models.Model):
