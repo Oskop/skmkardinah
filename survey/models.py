@@ -397,6 +397,28 @@ class JenisPegawai(models.Model):
         verbose_name_plural = "Jenis-Jenis Pegawai"
 
 
+class Layanan(models.Model):
+    """Layanan Model
+
+    Args:
+        models (**kwargs): (
+            nama: str(10)
+
+        )
+    """
+    id = models.CharField(primary_key=True, max_length=6, db_column="id")
+    nama = models.CharField(max_length=10, db_column="nama")
+
+    def __str__(self) -> str:
+        return f"{self.nama}"
+
+    class Meta:
+        managed = True
+        db_table = "layanan"
+        verbose_name = "Layanan"
+        verbose_name_plural = "Layanan-Layanan"
+
+
 class Pegawai(models.Model):
     """Pegawai Model
 
@@ -513,13 +535,18 @@ class Pelayanan(models.Model):
     id_registrasi = models.ForeignKey(
         Registrasi, models.DO_NOTHING, db_column="id_pendaftaran",
         verbose_name="Nomor Registrasi")
-    tglmasuk = models.DateTimeField(
-        auto_now_add=True, verbose_name="Tanggal Masuk")
-    tglkeluar = models.DateTimeField(
-        blank=True, null=True, verbose_name="Tanggal Keluar")
-    id_tempattidur = models.ForeignKey(
-        TempatTidur, models.DO_NOTHING, db_column='id_tempattidur',
-        verbose_name="Tempat Tidur")
+    tgllayanan = models.DateTimeField(
+        blank=True, null=True, verbose_name="Tanggal Layanan")
+    id_pegawai = models.ForeignKey(
+        Pegawai, models.DO_NOTHING,
+        blank=True, null=True, verbose_name="Petugas")
+    id_layanan = models.ForeignKey(
+        Layanan, models.DO_NOTHING, blank=True, null=True,
+        verbose_name="Layanan")
+    id_pemakaiankamar = models.ForeignKey(
+        PemakaianKamar, models.DO_NOTHING, blank=True, null=True,
+        verbose_name="Lokasi")
+    
 
     created_at = models.DateTimeField(
         auto_now_add=True, blank=True, null=True)
