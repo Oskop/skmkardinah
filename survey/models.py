@@ -385,7 +385,7 @@ class JenisPegawai(models.Model):
         )
     """
     id = models.CharField(primary_key=True, max_length=2, db_column="id")
-    nama = models.CharField(max_length=10, db_column="nama")
+    nama = models.CharField(max_length=20, db_column="nama")
 
     def __str__(self) -> str:
         return f"{self.nama}"
@@ -407,7 +407,7 @@ class Layanan(models.Model):
         )
     """
     id = models.CharField(primary_key=True, max_length=6, db_column="id")
-    nama = models.CharField(max_length=10, db_column="nama")
+    nama = models.CharField(max_length=50, db_column="nama")
 
     def __str__(self) -> str:
         return f"{self.nama}"
@@ -429,7 +429,7 @@ class Pegawai(models.Model):
         )
     """
     id = models.CharField(primary_key=True, max_length=10, db_column="id")
-    nama = models.CharField(max_length=10, db_column="nama")
+    nama = models.CharField(max_length=50, db_column="nama")
     jenis_pegawai = models.ForeignKey(
         JenisPegawai, models.DO_NOTHING,
         blank=True, null=True, verbose_name="Jenis Pegawai")
@@ -525,11 +525,11 @@ class Pelayanan(models.Model):
 
     Args:
         models (**kwargs): (
-            id_registrasi: Registrasi
-            id_
-            tglmasuk: datetime
-            tglkeluar: datetime
-            id_tempattidur: TempatTidur
+            id_registrasi: Registrasi,
+            tgllayanan: datetime,
+            id_pegawai: Pegawai,
+            id_layanan: Layanan,
+            id_pemakaiankamar: PemakaianKamar,
     """
     id = models.AutoField(primary_key=True, db_column="id")
     id_registrasi = models.ForeignKey(
@@ -594,6 +594,232 @@ class SurveiKepuasanMasyarakat(models.Model):
         db_table = "survei"
         verbose_name = "Survei"
         verbose_name_plural = "Survei-Survei"
+
+
+class SurveiKepuasanMasyarakatRev(models.Model):
+    """Survei Kepuasan Masyarakat
+
+    Args:
+        models (**kwargs): (
+            id_registrasi: Registrasi,
+            fasilitas_rate: int,
+            perawat_rate: int,
+            dokter_rate: int,
+            farmasi_rate: int,
+            komentar: str(-1)
+        )
+    """
+    id = models.AutoField(primary_key=True, db_column='id')
+    id_registrasi = models.ForeignKey(
+        Registrasi, models.DO_NOTHING, db_column="id_pendaftaran",
+        verbose_name="Nomor Registrasi")
+
+    etika_perawat_rate = models.SmallIntegerField(default=0)
+    penampilan_perawat_rate = models.SmallIntegerField(default=0)
+    kecakapan_perawat_rate = models.SmallIntegerField(default=0)
+    ketepatan_perawat_rate = models.SmallIntegerField(default=0)
+    komunikatif_perawat_rate = models.SmallIntegerField(default=0)
+    komentar_perawat = models.TextField(blank=True, null=True)
+    komentar_perawat_suara = models.FileField(upload_to='survey/voices/perawat/',
+                                              null=True)
+    perawat_time_critic = models.DateTimeField(blank=True, null=True)
+
+    etika_dokter_rate = models.SmallIntegerField(default=0)
+    penampilan_dokter_rate = models.SmallIntegerField(default=0)
+    kecakapan_dokter_rate = models.SmallIntegerField(default=0)
+    ketepatan_dokter_rate = models.SmallIntegerField(default=0)
+    solutif_dokter_rate = models.SmallIntegerField(default=0)
+    komentar_dokter = models.TextField(blank=True, null=True)
+    komentar_dokter_suara = models.FileField(upload_to='survey/voices/dokter/',
+                                             null=True)
+    dokter = models.ForeignKey(
+        Pegawai, models.DO_NOTHING, blank=True, null=True)
+
+    etika_farmasi_rate = models.SmallIntegerField(default=0)
+    penampilan_farmasi_rate = models.SmallIntegerField(default=0)
+    kecepatan_farmasi_rate = models.SmallIntegerField(default=0)
+    ketepatan_farmasi_rate = models.SmallIntegerField(default=0)
+    informatif_farmasi_rate = models.SmallIntegerField(default=0)
+    komentar_farmasi = models.TextField(blank=True, null=True)
+    komentar_farmasi_suara = models.FileField(upload_to='survey/voices/farmasi/',
+                                              null=True)
+
+    kelengkapan_fasilitas_rate = models.SmallIntegerField(default=0)
+    kebersihan_fasilitas_rate = models.SmallIntegerField(default=0)
+    kenyamanan_fasilitas_rate = models.SmallIntegerField(default=0)
+    kamarmandi_fasilitas_rate = models.SmallIntegerField(default=0)
+    kualitas_fasilitas_rate = models.SmallIntegerField(default=0)
+    komentar_fasilitas = models.TextField(blank=True, null=True)
+    komentar_fasilitas_suara = models.FileField(upload_to='survey/voices/fasilitas/',
+                                                null=True)
+
+    created_at = models.DateTimeField(
+        auto_now_add=True, blank=True, null=True)
+    deleted_at = models.DateTimeField(blank=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = "survei_rev"
+        verbose_name = "Survei Kepuasan Masyarakat"
+        verbose_name_plural = "Survei-Survei Kepuasan Masyarakat"
+
+
+
+# class SKMPerawat(models.Model):
+#     """Survei Kepuasan Masyarakat - Perawat
+
+#     Args:
+#         models (**kwargs): (
+#             id_registrasi: Registrasi,
+#             etika_rate: int,
+#             penampilan_rate: int,
+#             kecakapan_rate: int,
+#             ketepatan_rate: int,
+#             komunikatif_rate: int,
+#             komentar: str(-1),
+#             komentar_suara: FileField
+#         )
+#     """
+#     id = models.AutoField(primary_key=True, db_column='id')
+#     id_registrasi = models.ForeignKey(
+#         Registrasi, models.DO_NOTHING, db_column="id_pendaftaran",
+#         verbose_name="Nomor Registrasi")
+#     etika_rate = models.SmallIntegerField()
+#     penampilan_rate = models.SmallIntegerField()
+#     kecakapan_rate = models.SmallIntegerField()
+#     ketepatan_rate = models.SmallIntegerField()
+#     komunikatif_rate = models.SmallIntegerField()
+#     komentar_perawat = models.TextField(blank=True, null=True)
+#     komentar_perawat_suara = models.FileField(upload_to='survey/voices/perawat/',
+#                                       null=True)
+
+#     created_at = models.DateTimeField(
+#         auto_now_add=True, blank=True, null=True)
+#     deleted_at = models.DateTimeField(blank=True, null=True)
+#     updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
+#     class Meta:
+#         managed = True
+#         db_table = "survei_perawat"
+#         verbose_name = "Survei Perawat"
+#         verbose_name_plural = "Survei Perawat-Perawat"
+
+
+# class SKMDokter(models.Model):
+#     """Survei Kepuasan Masyarakat - Dokter
+
+#     Args:
+#         models (**kwargs): (
+#             id_registrasi: Registrasi,
+#             etika_rate: int,
+#             penampilan_rate: int,
+#             kecakapan_rate: int,
+#             ketepatan_rate: int,
+#             solutif_rate: int,
+#             komentar: str(-1),
+#             komentar_suara: FileField
+#         )
+#     """
+#     id = models.AutoField(primary_key=True, db_column='id')
+#     id_registrasi = models.ForeignKey(
+#         Registrasi, models.DO_NOTHING, db_column="id_pendaftaran",
+#         verbose_name="Nomor Registrasi")
+#     etika_rate = models.SmallIntegerField()
+#     penampilan_rate = models.SmallIntegerField()
+#     kecakapan_rate = models.SmallIntegerField()
+#     ketepatan_rate = models.SmallIntegerField()
+#     solutif_rate = models.SmallIntegerField()
+#     komentar_dokter = models.TextField(blank=True, null=True)
+#     komentar_dokter_suara = models.FileField(upload_to='survey/voices/dokter/',
+#                                       null=True)
+
+#     created_at = models.DateTimeField(
+#         auto_now_add=True, blank=True, null=True)
+#     deleted_at = models.DateTimeField(blank=True, null=True)
+#     updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
+#     class Meta:
+#         managed = True
+#         db_table = "survei_dokter"
+#         verbose_name = "Survei Dokter"
+#         verbose_name_plural = "Survei Dokter-Dokter"
+
+
+# class SKMFarmasi(models.Model):
+#     """Survei Kepuasan Masyarakat - Farmasi
+
+#     Args:
+#         models (**kwargs): (
+#             id_registrasi: Registrasi,
+#             etika_rate: int,
+#             penampilan_rate: int,
+#             kecepatan_rate: int,
+#             ketepatan_rate: int,
+#             informatif_rate: int,
+#             komentar: str(-1),
+#             komentar_suara: FileField
+#         )
+#     """
+#     id = models.AutoField(primary_key=True, db_column='id')
+#     id_registrasi = models.ForeignKey(
+#         Registrasi, models.DO_NOTHING, db_column="id_pendaftaran",
+#         verbose_name="Nomor Registrasi")
+#     etika_rate = models.SmallIntegerField()
+#     penampilan_rate = models.SmallIntegerField()
+#     kecepatan_rate = models.SmallIntegerField()
+#     ketepatan_rate = models.SmallIntegerField()
+#     informatif_rate = models.SmallIntegerField()
+#     komentar_farmasi = models.TextField(blank=True, null=True)
+#     komentar_farmasi_suara = models.FileField(upload_to='survey/voices/farmasi/',
+#                                       null=True)
+
+#     created_at = models.DateTimeField(
+#         auto_now_add=True, blank=True, null=True)
+#     deleted_at = models.DateTimeField(blank=True, null=True)
+#     updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
+#     class Meta:
+#         managed = True
+#         db_table = "survei_farmasi"
+#         verbose_name = "Survei Farmasi"
+#         verbose_name_plural = "Survei Farmasi"
+
+
+# class SKMFasilitas(models.Model):
+#     """Survei Kepuasan Masyarakat - Fasilitas
+
+#     Args:
+#         models (**kwargs): (
+#             id_registrasi: Registrasi,
+#             kelengkapan_rate: int,
+#             kebersihan_rate: int,
+#             kenyamanan_rate: int,
+#             kamarmandi_rate: int,
+#             kualitas_rate: int,
+#             komentar: str(-1),
+#             komentar_suara: FileField
+#         )
+#     """
+#     id = models.AutoField(primary_key=True, db_column='id')
+#     id_registrasi = models.ForeignKey(
+#         Registrasi, models.DO_NOTHING, db_column="id_pendaftaran",
+#         verbose_name="Nomor Registrasi")
+#     kelengkapan_rate = models.SmallIntegerField()
+#     kebersihan_rate = models.SmallIntegerField()
+#     kenyamanan_rate = models.SmallIntegerField()
+#     kamarmandi_rate = models.SmallIntegerField()
+#     kualitas_rate = models.SmallIntegerField()
+#     komentar_fasilitas = models.TextField(blank=True, null=True)
+#     komentar_fasilitas_suara = models.FileField(upload_to='survey/voices/fasilitas/',
+#                                       null=True)
+
+#     created_at = models.DateTimeField(
+#         auto_now_add=True, blank=True, null=True)
+#     deleted_at = models.DateTimeField(blank=True, null=True)
+#     updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
+#     class Meta:
+#         managed = True
+#         db_table = "survei_fasilitas"
+#         verbose_name = "Survei Fasilitas"
+#         verbose_name_plural = "Survei Fasilitas"
     
     
     
