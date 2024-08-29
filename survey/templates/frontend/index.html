@@ -209,7 +209,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row mt-2">
+                                <div class="row mt-2 justify-content-center">
                                     <div class="col-6">
                                         <div class="form-group">
                                             <label for="kecakapanperawatrating">Kecakapan Penanganan</label>
@@ -262,6 +262,16 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="row justify-content-center">
+                                    <div class="col-8 pt-1 col">
+                                        <div class="form-group">
+                                            <label for="perawat-time-pilihan">Pilih Waktu Pelanan</label>
+                                            <select name="perawat-time-pilihan" id="perawat-time-pilihan" disabled="" class="form-control">
+                                                <option value="">Kosongkan</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="row mt-4">
                                     <div class="col-12">
                                         <div class="d-flex align-items-center justify-content-center">
@@ -305,14 +315,6 @@
                             </div>
 
                             <div class="tab-pane fade" id="dokter-tab-survey" role="tabpanel" aria-labelledby="dokter-tab-button">
-                                <div class="row justify-content-center">
-                                    <div class="col-8 pt-1 col">
-                                        <div class="form-group">
-                                            <label for="ruangan">Pilih Dokter</label>
-                                            <select name="dokter-pilihan" id="dokter-pilihan" disabled="" class="form-control"></select>
-                                        </div>
-                                    </div>
-                                </div>
                                 <div class="row mt-2">
                                     <div class="col-6">
                                         <div class="form-group">
@@ -349,7 +351,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row mt-2">
+                                <div class="row mt-2 justify-content-center">
                                     <div class="col-6">
                                         <div class="form-group">
                                             <label for="kecakapandokterrating">Kecakapan Penanganan</label>
@@ -399,6 +401,16 @@
                                                 <label for="solutifdokter-rate-5" style="--i:5"><i class="fa-solid fa-star"></i></label>
                                                 <input type="radio" name="solutifdokter-rating" id="solutifdokter-rate-5" value="5">
                                             </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row justify-content-center">
+                                    <div class="col-8 pt-1 col">
+                                        <div class="form-group">
+                                            <label for="ruangan">Pilih Dokter</label>
+                                            <select name="dokter-pilihan" id="dokter-pilihan" disabled="" class="form-control">
+                                                <option value="">Kosongkan</option>
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -483,7 +495,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row mt-2">
+                                <div class="row mt-2 justify-content-center">
                                     <div class="col-6">
                                         <div class="form-group">
                                             <label for="kenyamananfasilitasrating">Kenyamanan</label>
@@ -615,7 +627,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row mt-2">
+                                <div class="row mt-2 justify-content-center">
                                     <div class="col-6">
                                         <div class="form-group">
                                             <label for="kecepatanapotekerrating">Kecepatan Pelayanan</label>
@@ -947,11 +959,20 @@
             let formData = new FormData(formElement);
             noreg = formData.get('noregistrasi')
             if (noreg != null && noreg != undefined && noreg != "") {
-                if (audioBlobFinished != undefined && audioBlobFinished != null && audioBlobFinished != "") {
-                    formData.append('voice', audioBlobFinished, 'voice.ogg')
+                if (audioBlobFinishedDokter != undefined && audioBlobFinishedDokter != null && audioBlobFinishedDokter != "") {
+                    formData.append('voicedokter', audioBlobFinishedDokter, 'voicedokter.ogg')
+                }
+                if (audioBlobFinishedPerawat != undefined && audioBlobFinishedPerawat != null && audioBlobFinishedPerawat != "") {
+                    formData.append('voiceperawat', audioBlobFinishedPerawat, 'voiceperawat.ogg')
+                }
+                if (audioBlobFinishedFarmasi != undefined && audioBlobFinishedFarmasi != null && audioBlobFinishedFarmasi != "") {
+                    formData.append('voicefarmasi', audioBlobFinishedFarmasi, 'voicefarmasi.ogg')
+                }
+                if (audioBlobFinishedFasilitas != undefined && audioBlobFinishedFasilitas != null && audioBlobFinishedFasilitas != "") {
+                    formData.append('voicefasilitas', audioBlobFinishedFasilitas, 'voicefasilitas.ogg')
                 }
                 console.log(formData)
-                const req = fetch("{% url 'survey-kirim' %}" + noreg, {
+                const req = fetch("{% url 'survey-kirim-rev' %}" + noreg, {
                     method: "POST",
                     body: formData,
                 })
@@ -1090,9 +1111,35 @@
             norm = document.getElementById('norm').value
             getRequest("{% url 'survey-riwayat-pelayanan' %}" + norm).then((response) => {
                 if (response.success) {
-                    document.getElementById('namaruangan').value = response.data.ruangan
                     document.getElementById('noregistrasi').value = response.data.noregistrasi
+                    if (response.data.dokters.length != 0) {
+                        document.getElementById('dokter-pilihan').innerHTML = ""
+                        document.getElementById('dokter-pilihan').disabled = false
+                        opt = document.createElement('option')
+                        opt.value = ""; opt.text = "Pilih Dokter"
+                        document.getElementById('dokter-pilihan').append(opt)
+                        response.data.dokters.forEach(d => {
+                            opt = document.createElement('option')
+                            opt.value = d[0]; opt.text = d[1]
+                            document.getElementById('dokter-pilihan').append(opt)
+                        });
+                    }
+                    if (response.data.perawattimes.length != 0) {
+                        document.getElementById('perawat-time-pilihan').innerHTML = ""
+                        document.getElementById('perawat-time-pilihan').disabled = false
+                        opt = document.createElement('option')
+                        opt.value = ""; opt.text = "Pilih Waktu Pelayanan"
+                        document.getElementById('perawat-time-pilihan').append(opt)
+                        response.data.perawattimes.forEach(p => {
+                            opt = document.createElement('option')
+                            opt.value = p[0]; opt.text = p[1]
+                            document.getElementById('perawat-time-pilihan').append(opt)
+                        });
+                    }
                     document.getElementById('jk').value = response.data.jk
+                    if (response.data.error != "") {
+                        alert(response.data.error)
+                    }
                 } else {
                     alert(response.error)
                 }
@@ -1609,7 +1656,7 @@
                     //...
                     playAudio(audioElementSource, audioElement, audioAsblob)
                     audioBlobFinished = audioAsblob
-                    kirimSuaraAlihTeks()
+                    // kirimSuaraAlihTeks()
                 })
                 .catch(error => {
                     //Error handling structure
