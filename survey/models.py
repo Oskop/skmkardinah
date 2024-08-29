@@ -448,12 +448,13 @@ class Registrasi(models.Model):
     """Registrasi Model
 
     Args:
+        
         models (**kwargs): {
-            id: int
-            norm: Pasien
-            id_kelas: KelasPelayanan
-            tglregistrasi: datetime
-            tglpulang: datetime|nullable
+            id: int,
+            norm: Pasien,
+            id_kelas: KelasPelayanan,
+            tglregistrasi: datetime,
+            tglpulang: datetime|nullable,
         }
     """
     id = models.AutoField(primary_key=True, db_column="id")
