@@ -6,9 +6,12 @@ from django.http import (
     JsonResponse, HttpResponseRedirect, HttpResponse)
 from survey.controllers.pasiens import get_pasien_by_norm
 from survey.controllers.kamars import get_pemakaiankamar_by
+from survey.controllers.pelayanans import (
+    get_dokters_from_pelayanan, get_perawattimes_from_pelayanan)
 from survey.controllers.surveys import (
     input_survey, skm_stt, laporan_export_pdf,
-    handle_voice_direct,)
+    laporan_export_pdf_rev,
+    handle_voice_direct, input_survey_rev)
 
 # Create your views here.
 def survey_index(request: HttpRequest):
@@ -22,14 +25,27 @@ def current_survey_environment_by_norm(request: HttpRequest, norm: str = None):
             pasien = get_pasien_by_norm(norm=norm)
             if not isinstance(pasien, str):
                 kamar, error = get_pemakaiankamar_by(pasien)
+                dokters, errordokter = get_dokters_from_pelayanan(pasien)
+                timess, errortimess = get_perawattimes_from_pelayanan(pasien)
                 if kamar:
                     response["data"].update(
                         {"ruangan":
                             kamar.id_tempattidur.id_kamar.id_ruangan.nama})
+                    if len(dokters) != 0:
+                        response["data"].update(
+                            {"dokters": dokters})
+                    else:
+                        response["error"] = errordokter
+                    if len(timess) != 0:
+                        response["data"].update(
+                            {"perawattimes": timess})
+                    else:
+                        response["error"] += f"\n {errortimess}"
                     response["data"].update({"norm": pasien.nocm})
                     response["data"].update({"pasien": pasien.nama})
                     response["data"].update({"noregistrasi":
                                             kamar.id_registrasi_id})
+                    response["data"].update({"jk": pasien.jk})
                     response["success"] = True
                 else:
                     response["error"] = error
@@ -47,6 +63,23 @@ def survey_input(request: HttpRequest, id_registrasi = None):
     if id_registrasi != 0:
         if request.method == 'POST':
             success, message = input_survey(id_registrasi, request.POST, request.FILES)
+            if success:
+                response["success"] = True
+            else:
+                response["error"] = message
+        else:
+            response["error"] = "Tidak diizinkan"
+    else:
+        response["error"] = "Nomor Registrasi Pasien tidak terkirim"
+    return JsonResponse(response)
+
+
+def survey_input_rev(request: HttpRequest, id_registrasi = None):
+    response = {"success": False, "error": "", "data": []}
+    if id_registrasi != 0:
+        if request.method == 'POST':
+            success, message = input_survey_rev(
+                id_registrasi, request.POST, request.FILES)
             if success:
                 response["success"] = True
             else:
@@ -98,7 +131,7 @@ def laporan_export_endpoint(request: HttpRequest):
     if request.method == "GET":
         dari = request.GET.get('dari', '')
         ke = request.GET.get('ke', '')
-        return laporan_export_pdf(request, dari, ke)
+        return laporan_export_pdf_rev(request, dari, ke)
     else:
         messages.error(request, "Metode tidak diperbolehkan")
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
