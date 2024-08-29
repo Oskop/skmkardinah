@@ -1,7 +1,10 @@
-from survey.models import SurveiKepuasanMasyarakat, Registrasi
+from survey.models import (
+    SurveiKepuasanMasyarakat, Registrasi,
+    SurveiKepuasanMasyarakatRev, Pegawai, Pelayanan)
 from survey.controllers.sherpa import predict_voice_text, ogg_to_wav
-from survey.filters import export_to_pdf_survey
+from survey.filters import export_to_pdf_survey_rev
 from django.core.files import File
+from django.core.files.uploadedfile import UploadedFile
 from django.http import HttpResponse
 from django.http.request import HttpRequest
 import pathlib
@@ -135,6 +138,58 @@ def handle_voice_file(skm: SurveiKepuasanMasyarakat, f, stt = False):
     return message
 
 
+def handle_voice_file_rev(skm: SurveiKepuasanMasyarakatRev, f: UploadedFile, factor: str):
+    message = ""
+    parent_dir = 'media/'
+    voice_directory = 'survey/voices/'
+    if factor.strip().lower() == "dokter":
+        voice_directory = skm.komentar_dokter_suara.field.upload_to
+    if factor.strip().lower() == "perawat":
+        voice_directory = skm.komentar_perawat_suara.field.upload_to
+    if factor.strip().lower() == "farmasi":
+        voice_directory = skm.komentar_farmasi_suara.field.upload_to
+    if factor.strip().lower() == "fasilitas":
+        voice_directory = skm.komentar_fasilitas_suara.field.upload_to
+    destination_dir = parent_dir + voice_directory
+    pathlib.Path(destination_dir).mkdir(parents=True, exist_ok=True)
+    basefilename = str(f"{skm.id}__{skm.id_registrasi_id}"
+                   + f"__{skm.id_registrasi.norm_id}")
+    filename = str(f"{datetime.now().isoformat().replace(':', '..')}__"
+                   + basefilename + ".ogg")
+    # print(str(destination_dir) + filename)
+    with open(str(destination_dir) + filename, "wb+") as destination:
+        for chunk in f.chunks():
+            destination.write(chunk)
+    if pathlib.Path(str(destination_dir) + filename).exists():
+        message = f"voice {filename} [raw] saved."
+    output_wav = filename[:-3] + "wav"
+    if ogg_to_wav(str(destination_dir) + filename, 
+                  str(destination_dir) + output_wav):
+        if factor.strip().lower() == "dokter":
+            skm.komentar_dokter_suara = File(
+                pathlib.Path(str(destination_dir) + output_wav).open(mode='rb'),
+                name=basefilename + '.wav')
+        if factor.strip().lower() == "perawat":
+            skm.komentar_perawat_suara = File(
+                pathlib.Path(str(destination_dir) + output_wav).open(mode='rb'),
+                name=basefilename + '.wav')
+        if factor.strip().lower() == "farmasi":
+            skm.komentar_farmasi_suara = File(
+                pathlib.Path(str(destination_dir) + output_wav).open(mode='rb'),
+                name=basefilename + '.wav')
+        if factor.strip().lower() == "fasilitas":
+            skm.komentar_fasilitas_suara = File(
+                pathlib.Path(str(destination_dir) + output_wav).open(mode='rb'),
+                name=basefilename + '.wav')
+        skm.save()
+        pathlib.Path(str(destination_dir) + output_wav).unlink(missing_ok=True)
+        if skm.komentar_suara.name:
+            message = "file upload successful"
+    else:
+        message = f"convert to {output_wav} failed!"
+    return message
+
+
 def input_survey(id_registrasi, post, files):
     success, error = False, None
     if id_registrasi:
@@ -166,6 +221,79 @@ def input_survey(id_registrasi, post, files):
     return success, error
 
 
+def input_survey_rev(id_registrasi, post, files):
+    success, error = False, None
+    if id_registrasi:
+        try:
+            registrasi = Registrasi.objects.get(id=id_registrasi)
+            if post.get('dokter-pilihan', None):
+                try:
+                    dokter = Pegawai.objects.get(id=post.get('dokter-pilihan'))
+                except Pegawai.DoesNotExist:
+                    dokter = None
+            if post.get('perawat-time-choice', "") != "":
+                try:
+                    perawatlayanan = Pelayanan.objects.get(
+                        id=post.get('perawat-time-choice', ""))
+                except Pelayanan.DoesNotExist:
+                    perawatlayanan = None
+            thesurvey = SurveiKepuasanMasyarakatRev(
+                id_registrasi=registrasi,
+                
+                etika_perawat_rate=post.get('etikaperawat-rating', 0),
+                penampilan_perawat_rate=post.get(
+                    'penampilanperawat-rating', 0),
+                kecakapan_perawat_rate=post.get('kecakapanperawat-rating', 0),
+                ketepatan_perawat_rate=post.get('ketepatanperawat-rating', 0),
+                komunikatif_perawat_rate=post.get(
+                    'komunikatifperawat-rating', 0),
+                komentar_perawat=post.get('perawat-comments', None),
+                perawat_time_critic=perawatlayanan,
+
+                etika_dokter_rate=post.get('etikadokter-rating', 0),
+                penampilan_dokter_rate=post.get('penampilandokter-rating', 0),
+                kecakapan_dokter_rate=post.get('kecakapandokter-rating', 0),
+                ketepatan_dokter_rate=post.get('ketepatandokter-rating', 0),
+                solutif_dokter_rate=post.get('solutifdokter-rating', 0),
+                komentar_dokter=post.get('dokter-comments', None),
+                dokter=dokter,
+
+                etika_farmasi_rate=post.get('etikaapoteker-rating', 0),
+                penampilan_farmasi_rate=post.get('penampilanapoteker-rating', 0),
+                kecepatan_farmasi_rate=post.get('kecepatanapoteker-rating', 0),
+                ketepatan_farmasi_rate=post.get('ketepatanobatapoteker-rating', 0),
+                informatif_farmasi_rate=post.get('infopenggunaanobat-rating', 0),
+                komentar_farmasi=post.get('farmasi-comments', None),
+
+                kelengkapan_fasilitas_rate=post.get('kelengkapanfasilitas-rating', 0),
+                kebersihan_fasilitas_rate=post.get('kebersihanfasilitas-rating', 0),
+                kenyamanan_fasilitas_rate=post.get('kenyamananfasilitas-rating', 0),
+                kamarmandi_fasilitas_rate=post.get('kamarmandifasilitas-rating', 0),
+                kualitas_fasilitas_rate=post.get('kualitasfasilitas-rating', 0),
+                komentar_fasilitas=post.get('fasilitas-comments', None)
+            )
+            thesurvey.save()
+            print("saving survey without file")
+            if thesurvey.id is not None:
+                success = True
+                if files.get('voicedokter'):
+                    print(handle_voice_file_rev(thesurvey, files.get('voicedokter'), 'dokter'))
+                if files.get('voiceperawat'):
+                    print(handle_voice_file_rev(thesurvey, files.get('voiceperawat'), 'perawat'))
+                if files.get('voicefarmasi'):
+                    print(handle_voice_file_rev(thesurvey, files.get('voicefarmasi'), 'farmasi'))
+                if files.get('voicefasilitas'):
+                    print(handle_voice_file_rev(thesurvey, files.get('voicefasilitas'), 'fasilitas'))
+        except Registrasi.DoesNotExist:
+            error = "Id Registrasi tidak ditemukan"
+        except Exception as e:
+            error = e.__str__()
+            print(error)
+    else:
+        error = "id_registrasi tidak terkirim"
+    return success, error
+
+
 def laporan_export_pdf(
         request: HttpRequest, dari: str = '', ke: str = ''):
     surveys = SurveiKepuasanMasyarakat.objects
@@ -173,7 +301,23 @@ def laporan_export_pdf(
         surveys = surveys.filter(created_at__gte=dari, created_at__lte=ke)
     else:
         surveys = surveys.all()
-    pdfnya, filename = export_to_pdf_survey(request=request, queryset=surveys)
+    pdfnya, filename = export_to_pdf_survey_rev(
+        request=request, queryset=surveys)
+    response: HttpResponse = HttpResponse(
+        pdfnya, content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="' + filename + '"'
+    return response
+
+
+def laporan_export_pdf_rev(
+        request: HttpRequest, dari: str = '', ke: str = ''):
+    surveys = SurveiKepuasanMasyarakatRev.objects
+    if dari != '' and ke != '':
+        surveys = surveys.filter(created_at__gte=dari, created_at__lte=ke)
+    else:
+        surveys = surveys.all()
+    pdfnya, filename = export_to_pdf_survey_rev(
+        request=request, queryset=surveys)
     response: HttpResponse = HttpResponse(
         pdfnya, content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="' + filename + '"'
