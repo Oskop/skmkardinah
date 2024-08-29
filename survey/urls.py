@@ -1,6 +1,6 @@
 from django.urls import path, re_path
 from survey.views import (
-    survey_index, survey_input,
+    survey_index, survey_input, survey_input_rev,
     current_survey_environment_by_norm,
     stt_survey, laporan_export_endpoint,
     survey_stt_direct)
@@ -17,7 +17,11 @@ from survey.select2 import (
 urlpatterns = [
     path("home/", survey_index, name="survey-home"),
     path("kirim/", survey_input, name="survey-kirim"),
-    path("kirim/<int:id_registrasi>", survey_input, name="survey-kirim-with-id"),
+    path("kirim/<int:id_registrasi>", survey_input,
+         name="survey-kirim-with-id"),
+    path("kirim-rev/", survey_input_rev, name="survey-kirim-rev"),
+    path("kirim-rev/<int:id_registrasi>", survey_input_rev, 
+         name="survey-kirim-rev-with-id"),
     path("stt-direct/", survey_stt_direct, name="survey-stt-direct"),
     path("stt/", stt_survey, name="survey-stt"),
     path("stt/<int:id_skm>", stt_survey, name="survey-stt-with-id"),
