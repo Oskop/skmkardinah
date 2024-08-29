@@ -26,7 +26,8 @@ SECRET_KEY = 'django-insecure-sd-iw5g7=2d&+-8^rt^h8%gb3l!*6m&r+l=e$!6tgc7x^36*8o
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    '5e85664d986b-6258129514368584904.ngrok-free.app',
+    # '5e85664d986b-6258129514368584904.ngrok-free.app',
+    'great-husky-skilled.ngrok-free.app',
     'localhost', '0.0.0.0', '127.0.0.1'
 ]
 
