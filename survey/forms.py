@@ -201,3 +201,10 @@ class SurveiKepuasanMasyarakatForms(forms.ModelForm):
     class Meta:
         model = models.SurveiKepuasanMasyarakat
         exclude = ('created_at', 'updated_at', 'deleted_at',)
+
+
+
+class SurveiKepuasanMasyarakatRevForms(forms.ModelForm):
+    class Meta:
+        model = models.SurveiKepuasanMasyarakatRev
+        exclude = ('id', 'created_at', 'updated_at', 'deleted_at',)
