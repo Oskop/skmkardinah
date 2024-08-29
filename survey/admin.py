@@ -11,10 +11,13 @@ from survey.forms import (
     KotakabForms, KecamatanForms, KelurahanForms,
     PasienForms, RegistrasiForms, PemakaianKamarForms,
     SurveiKepuasanMasyarakatForms, RuanganForms, KamarForms,
+    SurveiKepuasanMasyarakatRevForms,
     TempatTidurForms)
 from survey.controllers.surveys import get_voice_file
 from survey.filters import (
-    ReportExportFilter, export_to_pdf_survey)
+    ReportExportFilter, 
+    # export_to_pdf_survey,
+    export_to_pdf_survey_rev)
 from rangefilter.filters import DateTimeRangeFilter
 from admincharts.admin import AdminChartMixin
 from admincharts.utils import months_between_dates
@@ -124,6 +127,48 @@ class InstalasiAdmin(admin.ModelAdmin):
     list_per_page = 10
 
 
+@admin.register(models.JenisPegawai)
+class JenisPegawaiAdmin(admin.ModelAdmin):
+    list_display = [x.attname.replace(
+        'survey.JenisPegawai.', ''
+    ) for x in models.JenisPegawai._meta.fields]
+    # list_display = ['id', 'nama', 'id_JenisPegawai']
+    # list_filter = (('mode', DateTimeRangeFilter),)
+    search_fields = [x.attname.replace(
+        'survey.JenisPegawai.', ''
+    ) for x in models.JenisPegawai._meta.fields if (
+        '_id' not in x.attname)]
+    list_per_page = 10
+
+
+@admin.register(models.Pegawai)
+class PegawaiAdmin(admin.ModelAdmin):
+    list_display = [x.attname.replace(
+        'survey.Pegawai.', ''
+    ) for x in models.Pegawai._meta.fields]
+    # list_display = ['id', 'nama', 'id_Pegawai']
+    # list_filter = (('mode', DateTimeRangeFilter),)
+    search_fields = [x.attname.replace(
+        'survey.Pegawai.', ''
+    ) for x in models.Pegawai._meta.fields if (
+        '_id' not in x.attname)]
+    list_per_page = 10
+
+
+@admin.register(models.Layanan)
+class LayananAdmin(admin.ModelAdmin):
+    list_display = [x.attname.replace(
+        'survey.Layanan.', ''
+    ) for x in models.Layanan._meta.fields]
+    # list_display = ['id', 'nama', 'id_Layanan']
+    # list_filter = (('mode', DateTimeRangeFilter),)
+    search_fields = [x.attname.replace(
+        'survey.Layanan.', ''
+    ) for x in models.Layanan._meta.fields if (
+        '_id' not in x.attname)]
+    list_per_page = 10
+
+
 @admin.register(models.Pasien)
 class PasienAdmin(admin.ModelAdmin):
     # list_display = [x.attname.replace(
@@ -198,8 +243,189 @@ class PemakaianKamarAdmin(admin.ModelAdmin):
 
     form = PemakaianKamarForms
 
-@admin.register(models.SurveiKepuasanMasyarakat)
-class SurveiKepuasanMasyarakatAdmin(
+# @admin.register(models.SurveiKepuasanMasyarakat)
+# class SurveiKepuasanMasyarakatAdmin(
+#     AdminChartMixin, admin.ModelAdmin, 
+#     # DjangoObjectActions
+#     ):
+    
+#     # actions = [laporan,]
+#     change_list_template = "chartjs/djangoobjecttools_change_list.html"
+
+
+#     # def changelist_view(self, request, extra_context=None):
+#     #     extra_context = extra_context or {}
+#     #     # extra_context.update(
+#     #     #     {
+#     #     #         "objectactions": [
+#     #     #             self._get_tool_dict(action)
+#     #     #             for action in self.get_changelist_actions(request)
+#     #     #         ],
+#     #     #         "tools_view_name": self.tools_view_name,
+#     #     #     }
+#     #     # )
+#     #     response = super().changelist_view(request, extra_context=extra_context)
+
+#     #     # This could be a redirect and not have context_data
+#     #     if not hasattr(response, "context_data"):
+#     #         return response
+
+#     #     if "cl" in response.context_data:
+#     #         changelist = response.context_data["cl"]
+#     #         chart_queryset = self.get_list_chart_queryset(changelist)
+#     #         response.context_data["adminchart_queryset"] = chart_queryset
+#     #         response.context_data[
+#     #             "adminchart_chartjs_config"
+#     #         ] = self.get_list_chart_config(chart_queryset)
+#     #     else:
+#     #         response.context_data["adminchart_queryset"] = None
+#     #         response.context_data["adminchart_chartjs_config"] = None
+
+#     #     return response
+
+
+#     # This will help you to disbale add functionality
+#     def has_add_permission(self, request):
+#         return False
+
+#     # This will help you to disable delete functionaliyt
+#     def has_delete_permission(self, request, obj=None):
+#         return False
+    
+#     # Chartsj
+#     def get_list_chart_data(
+#             self, queryset: QuerySet[models.SurveiKepuasanMasyarakat]):
+#         if not queryset:
+#             return {}
+
+#         # Cannot reorder the queryset at this point
+#         earliest = min([x.created_at for x in queryset])
+
+#         labels = []
+#         farmasi_totals = []
+#         perawat_totals = []
+#         dokter_totals = []
+#         fasilitas_totals = []
+#         for b in months_between_dates(earliest, timezone.now()):
+#             labels.append(b.strftime("%b %Y"))
+#             farmasi_totals.append(
+#                 sum(
+#                     [
+#                         x.farmasi_rate
+#                         for x in queryset
+#                         if x.created_at.year == b.year and x.created_at.month == b.month
+#                     ]
+#                 )
+#             )
+#             fasilitas_totals.append(
+#                 sum(
+#                     [
+#                         x.fasilitas_rate
+#                         for x in queryset
+#                         if x.created_at.year == b.year and x.created_at.month == b.month
+#                     ]
+#                 )
+#             )
+#             perawat_totals.append(
+#                 sum(
+#                     [
+#                         x.perawat_rate
+#                         for x in queryset
+#                         if x.created_at.year == b.year and x.created_at.month == b.month
+#                     ]
+#                 )
+#             )
+#             dokter_totals.append(
+#                 sum(
+#                     [
+#                         x.dokter_rate
+#                         for x in queryset
+#                         if x.created_at.year == b.year and x.created_at.month == b.month
+#                     ]
+#                 )
+#             )
+
+#         return {
+#             "labels": labels,
+#             "datasets": [
+#                 {"label": "Fasilitas", "data": fasilitas_totals, "backgroundColor": "#B4B4B4"},
+#                 {"label": "Perawat", "data": perawat_totals, "backgroundColor": "#EB4FD8"},
+#                 {"label": "Dokter", "data": dokter_totals, "backgroundColor": "#4472C4"},
+#                 {"label": "Farmasi", "data": farmasi_totals, "backgroundColor": "#F07F46"},
+#             ],
+#         }
+    
+#     def get_list_chart_queryset(self, changelist):
+#         return changelist.queryset
+    
+    
+#     list_display = [x.attname.replace(
+#         'survey.SurveiKepuasanMasyarakat.', ''
+#     ) for x in models.SurveiKepuasanMasyarakat._meta.fields]
+#     list_display = [
+#         'id', 'get_registrasi',
+#         'fasilitas_rate', 'perawat_rate', 'dokter_rate', 'farmasi_rate',
+#         'komentar', 'get_voice', 'created_at', 'get_stt']
+#     list_filter = (('created_at', DateTimeRangeFilter),
+#                    ReportExportFilter)
+#     search_fields = [x.attname.replace(
+#         'survey.SurveiKepuasanMasyarakat.', ''
+#     ) for x in models.SurveiKepuasanMasyarakat._meta.fields if (
+#         '_id' not in x.attname)]
+#     @admin.display(ordering='id_registrasi__id',
+#                    description='Registrasi Pasien')
+#     def get_registrasi(self, obj: models.SurveiKepuasanMasyarakat):
+#         return str(
+#             f"{obj.id_registrasi.id} "
+#             + f"{obj.id_registrasi.norm.nocm} "
+#             + f"{obj.id_registrasi.norm.nama}, "
+#             # + f"Kelas {obj.id_tempattidur.id_kamar.id_ruangan}"
+#             )
+    
+#     @admin.display(ordering='komentar',
+#                    description='Komentar Suara')
+#     def get_voice(self, obj: models.SurveiKepuasanMasyarakat):
+#         # print('obj.komentar_suara.name is not None', obj.komentar_suara.name != "", len(obj.komentar_suara.name))
+#         if (isinstance(obj.komentar_suara.name, str
+#                        ) and obj.komentar_suara.name != ""
+#             ) and obj.komentar_suara.name is not None:
+#             return format_html(f'<audio controls name="media">'
+#                             +f'<source src="{obj.komentar_suara.url}" '
+#                             +'></audio>')
+#         else:
+#             return "Tidak ada file komentar suara"
+        
+
+#     @admin.display(ordering='komentar',
+#                    description='Aksi')
+#     def get_stt(self, obj: models.SurveiKepuasanMasyarakat):
+#         return format_html(str(
+#             f'<a href="{reverse("survey-stt-with-id", args=[obj.id,])}"'
+#             +' class="button btn btn-primary">SkT</a>'
+#         ))
+#     list_per_page = 10
+    
+#     form = SurveiKepuasanMasyarakatForms
+#     actions = ["laporan_survey_pdf",]
+
+#     @admin.action(description="Laporan Survey")
+#     def laporan_survey_pdf(self, request, queryset):
+#         print('ada redirect atau tidak?')
+#         print(export_to_pdf_survey(request, queryset))
+#         return HttpResponseRedirect('/')
+
+
+#     # @action(
+#     #     label="Unduh Laporan (pdf)",  # optional
+#     #     description="Laporan Survey dalam format PDF" # optional
+#     # )
+    
+#     # change_actions = ('laporan', )
+#     # changelist_actions = ('laporan_survey_pdf', )
+
+
+@admin.register(models.SurveiKepuasanMasyarakatRev)
+class SurveiKepuasanMasyarakatRevAdmin(
     AdminChartMixin, admin.ModelAdmin, 
     # DjangoObjectActions
     ):
@@ -249,7 +475,7 @@ class SurveiKepuasanMasyarakatAdmin(
     
     # Chartsj
     def get_list_chart_data(
-            self, queryset: QuerySet[models.SurveiKepuasanMasyarakat]):
+            self, queryset: QuerySet[models.SurveiKepuasanMasyarakatRev]):
         if not queryset:
             return {}
 
@@ -261,12 +487,17 @@ class SurveiKepuasanMasyarakatAdmin(
         perawat_totals = []
         dokter_totals = []
         fasilitas_totals = []
+        all_total = []
         for b in months_between_dates(earliest, timezone.now()):
             labels.append(b.strftime("%b %Y"))
             farmasi_totals.append(
                 sum(
                     [
-                        x.farmasi_rate
+                        (x.etika_farmasi_rate 
+                        + x.penampilan_farmasi_rate
+                        + x.kecepatan_farmasi_rate
+                        + x.ketepatan_farmasi_rate
+                        + x.informatif_farmasi_rate) / 5
                         for x in queryset
                         if x.created_at.year == b.year and x.created_at.month == b.month
                     ]
@@ -275,7 +506,11 @@ class SurveiKepuasanMasyarakatAdmin(
             fasilitas_totals.append(
                 sum(
                     [
-                        x.fasilitas_rate
+                        (x.kelengkapan_fasilitas_rate
+                        + x.kebersihan_fasilitas_rate
+                        + x.kenyamanan_fasilitas_rate
+                        + x.kamarmandi_fasilitas_rate
+                        + x.kualitas_fasilitas_rate) / 5
                         for x in queryset
                         if x.created_at.year == b.year and x.created_at.month == b.month
                     ]
@@ -284,7 +519,11 @@ class SurveiKepuasanMasyarakatAdmin(
             perawat_totals.append(
                 sum(
                     [
-                        x.perawat_rate
+                        (x.etika_perawat_rate
+                        + x.penampilan_perawat_rate
+                        + x.kecakapan_perawat_rate
+                        + x.ketepatan_perawat_rate
+                        + x.komunikatif_perawat_rate) / 5
                         for x in queryset
                         if x.created_at.year == b.year and x.created_at.month == b.month
                     ]
@@ -293,7 +532,39 @@ class SurveiKepuasanMasyarakatAdmin(
             dokter_totals.append(
                 sum(
                     [
-                        x.dokter_rate
+                        (x.etika_dokter_rate
+                        + x.penampilan_dokter_rate
+                        + x.kecakapan_dokter_rate
+                        + x.ketepatan_dokter_rate
+                        + x.solutif_dokter_rate) / 5
+                        for x in queryset
+                        if x.created_at.year == b.year and x.created_at.month == b.month
+                    ]
+                )
+            )
+            all_total.append(
+                sum(
+                    [
+                        (x.etika_farmasi_rate 
+                        + x.penampilan_farmasi_rate
+                        + x.kecepatan_farmasi_rate
+                        + x.ketepatan_farmasi_rate
+                        + x.informatif_farmasi_rate
+                        + x.kelengkapan_fasilitas_rate
+                        + x.kebersihan_fasilitas_rate
+                        + x.kenyamanan_fasilitas_rate
+                        + x.kamarmandi_fasilitas_rate
+                        + x.kualitas_fasilitas_rate
+                        + x.etika_perawat_rate
+                        + x.penampilan_perawat_rate
+                        + x.kecakapan_perawat_rate
+                        + x.ketepatan_perawat_rate
+                        + x.komunikatif_perawat_rate
+                        + x.etika_dokter_rate
+                        + x.penampilan_dokter_rate
+                        + x.kecakapan_dokter_rate
+                        + x.ketepatan_dokter_rate
+                        + x.solutif_dokter_rate) / 20
                         for x in queryset
                         if x.created_at.year == b.year and x.created_at.month == b.month
                     ]
@@ -307,6 +578,7 @@ class SurveiKepuasanMasyarakatAdmin(
                 {"label": "Perawat", "data": perawat_totals, "backgroundColor": "#EB4FD8"},
                 {"label": "Dokter", "data": dokter_totals, "backgroundColor": "#4472C4"},
                 {"label": "Farmasi", "data": farmasi_totals, "backgroundColor": "#F07F46"},
+                {"label": "Keseluruhan", "data": all_total, "backgroundColor": "#00FFAB"},
             ],
         }
     
@@ -315,21 +587,21 @@ class SurveiKepuasanMasyarakatAdmin(
     
     
     list_display = [x.attname.replace(
-        'survey.SurveiKepuasanMasyarakat.', ''
-    ) for x in models.SurveiKepuasanMasyarakat._meta.fields]
-    list_display = [
-        'id', 'get_registrasi',
-        'fasilitas_rate', 'perawat_rate', 'dokter_rate', 'farmasi_rate',
-        'komentar', 'get_voice', 'created_at', 'get_stt']
+        'survey.SurveiKepuasanMasyarakatRev.', ''
+    ) for x in models.SurveiKepuasanMasyarakatRev._meta.fields]
+    # list_display = [
+    #     'id', 'get_registrasi',
+    #     'fasilitas_rate', 'perawat_rate', 'dokter_rate', 'farmasi_rate',
+    #     'komentar', 'get_voice', 'created_at', 'get_stt']
     list_filter = (('created_at', DateTimeRangeFilter),
                    ReportExportFilter)
     search_fields = [x.attname.replace(
-        'survey.SurveiKepuasanMasyarakat.', ''
-    ) for x in models.SurveiKepuasanMasyarakat._meta.fields if (
+        'survey.SurveiKepuasanMasyarakatRev.', ''
+    ) for x in models.SurveiKepuasanMasyarakatRev._meta.fields if (
         '_id' not in x.attname)]
     @admin.display(ordering='id_registrasi__id',
                    description='Registrasi Pasien')
-    def get_registrasi(self, obj: models.SurveiKepuasanMasyarakat):
+    def get_registrasi(self, obj: models.SurveiKepuasanMasyarakatRev):
         return str(
             f"{obj.id_registrasi.id} "
             + f"{obj.id_registrasi.norm.nocm} "
@@ -339,7 +611,7 @@ class SurveiKepuasanMasyarakatAdmin(
     
     @admin.display(ordering='komentar',
                    description='Komentar Suara')
-    def get_voice(self, obj: models.SurveiKepuasanMasyarakat):
+    def get_voice(self, obj: models.SurveiKepuasanMasyarakatRev):
         # print('obj.komentar_suara.name is not None', obj.komentar_suara.name != "", len(obj.komentar_suara.name))
         if (isinstance(obj.komentar_suara.name, str
                        ) and obj.komentar_suara.name != ""
@@ -353,20 +625,20 @@ class SurveiKepuasanMasyarakatAdmin(
 
     @admin.display(ordering='komentar',
                    description='Aksi')
-    def get_stt(self, obj: models.SurveiKepuasanMasyarakat):
+    def get_stt(self, obj: models.SurveiKepuasanMasyarakatRev):
         return format_html(str(
             f'<a href="{reverse("survey-stt-with-id", args=[obj.id,])}"'
             +' class="button btn btn-primary">SkT</a>'
         ))
     list_per_page = 10
     
-    form = SurveiKepuasanMasyarakatForms
+    form = SurveiKepuasanMasyarakatRevForms
     actions = ["laporan_survey_pdf",]
 
     @admin.action(description="Laporan Survey")
     def laporan_survey_pdf(self, request, queryset):
         print('ada redirect atau tidak?')
-        print(export_to_pdf_survey(request, queryset))
+        print(export_to_pdf_survey_rev(request, queryset))
         return HttpResponseRedirect('/')
 
 
@@ -454,3 +726,19 @@ class TempatTidurAdmin(admin.ModelAdmin):
     
     list_per_page = 10
     form = TempatTidurForms
+
+
+@admin.register(models.Pelayanan)
+class PelayananAdmin(admin.ModelAdmin):
+    # list_display = [x.attname.replace(
+    #     'survey.TempatTidur.', ''
+    # ) for x in models.TempatTidur._meta.fields]
+    list_display = ['id_registrasi', 'tgllayanan', 'id_pegawai', 'id_layanan', 'id_pemakaiankamar']
+    # list_filter = (('mode', DateTimeRangeFilter),)
+    search_fields = [x.attname.replace(
+        'survey.Pelayanan.', ''
+    ) for x in models.Pelayanan._meta.fields if (
+        '_id' not in x.attname)]
+    
+    list_per_page = 10
+    # form = TempatTidurForms
