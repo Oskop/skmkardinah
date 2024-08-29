@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path, include
+from skm.api import api
 from survey.urls import survey_index
 from django.conf.urls.static import static
 from skm import settings
@@ -24,6 +25,7 @@ from skm import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('survey/', include('survey.urls')),
+    path('survey/api/', api.urls),
     path('', survey_index),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT
            ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
