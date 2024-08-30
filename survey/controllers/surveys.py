@@ -222,7 +222,7 @@ def input_survey(id_registrasi, post, files):
 
 
 def input_survey_rev(id_registrasi, post, files):
-    success, error = False, None
+    success, error, dokter, perawatlayanan = False, None, None, None
     if id_registrasi:
         try:
             registrasi = Registrasi.objects.get(id=id_registrasi)
