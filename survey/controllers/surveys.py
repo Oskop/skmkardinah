@@ -236,6 +236,7 @@ def input_survey_rev(id_registrasi, post, files):
                 try:
                     perawatlayanan = datetime.strptime(
                         post.get('perawat-choose-time', ""),
+                        "%Y-%m-%dT%H:%M:%S"
                         )
                 except Pelayanan.DoesNotExist:
                     perawatlayanan = None
