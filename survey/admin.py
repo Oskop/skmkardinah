@@ -589,10 +589,37 @@ class SurveiKepuasanMasyarakatRevAdmin(
     list_display = [x.attname.replace(
         'survey.SurveiKepuasanMasyarakatRev.', ''
     ) for x in models.SurveiKepuasanMasyarakatRev._meta.fields]
-    # list_display = [
-    #     'id', 'get_registrasi',
-    #     'fasilitas_rate', 'perawat_rate', 'dokter_rate', 'farmasi_rate',
-    #     'komentar', 'get_voice', 'created_at', 'get_stt']
+    list_display = [
+        'id', 'get_registrasi',
+        'etika_perawat_rate',
+        'penampilan_perawat_rate',
+        'kecakapan_perawat_rate',
+        'ketepatan_perawat_rate',
+        'komunikatif_perawat_rate',
+        'komentar_perawat',
+        'play_komentar_perawat_suara',
+        'etika_dokter_rate',
+        'penampilan_dokter_rate',
+        'kecakapan_dokter_rate',
+        'ketepatan_dokter_rate',
+        'solutif_dokter_rate',
+        'komentar_dokter',
+        'play_komentar_dokter_suara',
+        'kelengkapan_fasilitas_rate',
+        'kebersihan_fasilitas_rate',
+        'kenyamanan_fasilitas_rate',
+        'kamarmandi_fasilitas_rate',
+        'kualitas_fasilitas_rate',
+        'komentar_fasilitas',
+        'play_komentar_fasilitas_suara',
+        'etika_farmasi_rate',
+        'penampilan_farmasi_rate',
+        'kecepatan_farmasi_rate',
+        'ketepatan_farmasi_rate',
+        'informatif_farmasi_rate',
+        'komentar_farmasi',
+        'play_komentar_farmasi_suara',
+        'created_at',]
     list_filter = (('created_at', DateTimeRangeFilter),
                    ReportExportFilter)
     search_fields = [x.attname.replace(
@@ -603,21 +630,73 @@ class SurveiKepuasanMasyarakatRevAdmin(
                    description='Registrasi Pasien')
     def get_registrasi(self, obj: models.SurveiKepuasanMasyarakatRev):
         return str(
-            f"{obj.id_registrasi.id} "
-            + f"{obj.id_registrasi.norm.nocm} "
-            + f"{obj.id_registrasi.norm.nama}, "
+            f"No.Reg.{obj.id_registrasi.id}, "
+            + f"NoRM: {obj.id_registrasi.norm.nocm} "
+            + f"{obj.id_registrasi.norm.nama}"
             # + f"Kelas {obj.id_tempattidur.id_kamar.id_ruangan}"
             )
     
-    @admin.display(ordering='komentar',
-                   description='Komentar Suara')
-    def get_voice(self, obj: models.SurveiKepuasanMasyarakatRev):
-        # print('obj.komentar_suara.name is not None', obj.komentar_suara.name != "", len(obj.komentar_suara.name))
-        if (isinstance(obj.komentar_suara.name, str
-                       ) and obj.komentar_suara.name != ""
-            ) and obj.komentar_suara.name is not None:
+    # @admin.display(ordering='komentar',
+    #                description='Komentar Suara')
+    # def get_voice(self, obj: models.SurveiKepuasanMasyarakatRev):
+    #     # print('obj.komentar_suara.name is not None', obj.komentar_suara.name != "", len(obj.komentar_suara.name))
+    #     if (isinstance(obj.komentar_suara.name, str
+    #                    ) and obj.komentar_suara.name != ""
+    #         ) and obj.komentar_suara.name is not None:
+    #         return format_html(f'<audio controls name="media">'
+    #                         +f'<source src="{obj.komentar_suara.url}" '
+    #                         +'></audio>')
+    #     else:
+    #         return "Tidak ada file komentar suara"
+        
+    
+    @admin.display(ordering='komentar_perawat_suara',
+                   description='File Audio Komentar Perawat')
+    def play_komentar_perawat_suara(self, obj: models.SurveiKepuasanMasyarakatRev):
+        if (isinstance(obj.komentar_perawat_suara.name, str
+                       ) and obj.komentar_perawat_suara.name != ""
+            ) and obj.komentar_perawat_suara.name is not None:
             return format_html(f'<audio controls name="media">'
-                            +f'<source src="{obj.komentar_suara.url}" '
+                            +f'<source src="{obj.komentar_perawat_suara.url}" '
+                            +'></audio>')
+        else:
+            return "Tidak ada file komentar suara"
+        
+    
+    @admin.display(ordering='komentar_dokter_suara',
+                   description='File Audio Komentar Perawat')
+    def play_komentar_dokter_suara(self, obj: models.SurveiKepuasanMasyarakatRev):
+        if (isinstance(obj.komentar_dokter_suara.name, str
+                       ) and obj.komentar_dokter_suara.name != ""
+            ) and obj.komentar_dokter_suara.name is not None:
+            return format_html(f'<audio controls name="media">'
+                            +f'<source src="{obj.komentar_dokter_suara.url}" '
+                            +'></audio>')
+        else:
+            return "Tidak ada file komentar suara"
+        
+    
+    @admin.display(ordering='komentar_fasilitas_suara',
+                   description='File Audio Komentar Perawat')
+    def play_komentar_fasilitas_suara(self, obj: models.SurveiKepuasanMasyarakatRev):
+        if (isinstance(obj.komentar_fasilitas_suara.name, str
+                       ) and obj.komentar_fasilitas_suara.name != ""
+            ) and obj.komentar_fasilitas_suara.name is not None:
+            return format_html(f'<audio controls name="media">'
+                            +f'<source src="{obj.komentar_fasilitas_suara.url}" '
+                            +'></audio>')
+        else:
+            return "Tidak ada file komentar suara"
+        
+    
+    @admin.display(ordering='komentar_farmasi_suara',
+                   description='File Audio Komentar Perawat')
+    def play_komentar_farmasi_suara(self, obj: models.SurveiKepuasanMasyarakatRev):
+        if (isinstance(obj.komentar_farmasi_suara.name, str
+                       ) and obj.komentar_farmasi_suara.name != ""
+            ) and obj.komentar_farmasi_suara.name is not None:
+            return format_html(f'<audio controls name="media">'
+                            +f'<source src="{obj.komentar_farmasi_suara.url}" '
                             +'></audio>')
         else:
             return "Tidak ada file komentar suara"
