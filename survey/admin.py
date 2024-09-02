@@ -25,21 +25,21 @@ from django_object_actions import (
     DjangoObjectActions, action, takes_instance_or_queryset)
 # Register your models here.
 
-admin.site.register([
-    models.KelasPelayanan,])
+# admin.site.register([
+#     models.KelasPelayanan,])
 
-admin.site.unregister(Group)
-admin.site.unregister(User)
+# admin.site.unregister(Group)
+# admin.site.unregister(User)
 
 
 class CustomUserAdmin(admin.ModelAdmin):
     exclude = ('user_permissions', 'groups')
 
 
-admin.site.register(User, CustomUserAdmin)
+# admin.site.register(User, CustomUserAdmin)
 
 
-@admin.register(models.Provinsi)
+# @admin.register(models.Provinsi)
 class ProvinsiAdmin(admin.ModelAdmin):
     # list_display = [x.attname.replace(
     #     'survey.Provinsi.', ''
@@ -53,7 +53,7 @@ class ProvinsiAdmin(admin.ModelAdmin):
     list_per_page = 10
 
 
-@admin.register(models.Kotakab)
+# @admin.register(models.Kotakab)
 class KotakabAdmin(admin.ModelAdmin):
     # list_display = [x.attname.replace(
     #     'survey.Kotakab.', ''
@@ -73,7 +73,7 @@ class KotakabAdmin(admin.ModelAdmin):
     form = KotakabForms
 
 
-@admin.register(models.Kecamatan)
+# @admin.register(models.Kecamatan)
 class KecamatanAdmin(admin.ModelAdmin):
     # list_display = [x.attname.replace(
     #     'survey.Kecamatan.', ''
@@ -93,7 +93,7 @@ class KecamatanAdmin(admin.ModelAdmin):
     form = KecamatanForms
 
 
-@admin.register(models.Kelurahan)
+# @admin.register(models.Kelurahan)
 class KelurahanAdmin(admin.ModelAdmin):
     # list_display = [x.attname.replace(
     #     'survey.Kelurahan.', ''
@@ -113,7 +113,7 @@ class KelurahanAdmin(admin.ModelAdmin):
     form = KelurahanForms
 
 
-@admin.register(models.Instalasi)
+# @admin.register(models.Instalasi)
 class InstalasiAdmin(admin.ModelAdmin):
     list_display = [x.attname.replace(
         'survey.Instalasi.', ''
@@ -127,7 +127,7 @@ class InstalasiAdmin(admin.ModelAdmin):
     list_per_page = 10
 
 
-@admin.register(models.JenisPegawai)
+# @admin.register(models.JenisPegawai)
 class JenisPegawaiAdmin(admin.ModelAdmin):
     list_display = [x.attname.replace(
         'survey.JenisPegawai.', ''
@@ -141,7 +141,7 @@ class JenisPegawaiAdmin(admin.ModelAdmin):
     list_per_page = 10
 
 
-@admin.register(models.Pegawai)
+# @admin.register(models.Pegawai)
 class PegawaiAdmin(admin.ModelAdmin):
     list_display = [x.attname.replace(
         'survey.Pegawai.', ''
@@ -155,7 +155,7 @@ class PegawaiAdmin(admin.ModelAdmin):
     list_per_page = 10
 
 
-@admin.register(models.Layanan)
+# @admin.register(models.Layanan)
 class LayananAdmin(admin.ModelAdmin):
     list_display = [x.attname.replace(
         'survey.Layanan.', ''
@@ -169,7 +169,7 @@ class LayananAdmin(admin.ModelAdmin):
     list_per_page = 10
 
 
-@admin.register(models.Pasien)
+# @admin.register(models.Pasien)
 class PasienAdmin(admin.ModelAdmin):
     # list_display = [x.attname.replace(
     #     'demr.Pasien.', ''
@@ -203,7 +203,7 @@ class PasienAdmin(admin.ModelAdmin):
     list_per_page = 10
 
 
-@admin.register(models.Registrasi)
+# @admin.register(models.Registrasi)
 class RegistrasiAdmin(admin.ModelAdmin):
     # list_display = [x.attname.replace(
     #     'survey.Registrasi.', ''
@@ -218,7 +218,7 @@ class RegistrasiAdmin(admin.ModelAdmin):
     form = RegistrasiForms
 
 
-@admin.register(models.PemakaianKamar)
+# @admin.register(models.PemakaianKamar)
 class PemakaianKamarAdmin(admin.ModelAdmin):
     # list_display = [x.attname.replace(
     #     'survey.PemakaianKamar.', ''
@@ -243,7 +243,7 @@ class PemakaianKamarAdmin(admin.ModelAdmin):
 
     form = PemakaianKamarForms
 
-# @admin.register(models.SurveiKepuasanMasyarakat)
+@admin.register(models.SurveiKepuasanMasyarakat)
 # class SurveiKepuasanMasyarakatAdmin(
 #     AdminChartMixin, admin.ModelAdmin, 
 #     # DjangoObjectActions
@@ -730,7 +730,7 @@ class SurveiKepuasanMasyarakatRevAdmin(
     # changelist_actions = ('laporan_survey_pdf', )
 
 
-@admin.register(models.Ruangan)
+# @admin.register(models.Ruangan)
 class RuanganAdmin(admin.ModelAdmin):
     # list_display = [x.attname.replace(
     #     'survey.Ruangan.', ''
@@ -750,7 +750,7 @@ class RuanganAdmin(admin.ModelAdmin):
     form = RuanganForms
 
 
-@admin.register(models.Kamar)
+# @admin.register(models.Kamar)
 class KamarAdmin(admin.ModelAdmin):
     # list_display = [x.attname.replace(
     #     'survey.Kamar.', ''
@@ -776,7 +776,7 @@ class KamarAdmin(admin.ModelAdmin):
     form = KamarForms
 
 
-@admin.register(models.TempatTidur)
+# @admin.register(models.TempatTidur)
 class TempatTidurAdmin(admin.ModelAdmin):
     # list_display = [x.attname.replace(
     #     'survey.TempatTidur.', ''
@@ -807,7 +807,7 @@ class TempatTidurAdmin(admin.ModelAdmin):
     form = TempatTidurForms
 
 
-@admin.register(models.Pelayanan)
+# @admin.register(models.Pelayanan)
 class PelayananAdmin(admin.ModelAdmin):
     # list_display = [x.attname.replace(
     #     'survey.TempatTidur.', ''
