@@ -265,7 +265,8 @@ def export_to_pdf_survey_rev(
     Path(thepath).parent.mkdir(exist_ok=True)
     dfnew.to_html(
         'survey/Templates/datasets/rawdataset_rev.html',
-        index=False
+        index=False,
+        classes="mystyle"
     )
     logo_path = "survey/static/survey/assets_frontend/img/kardinah.png"
     # data_base64 = ""
