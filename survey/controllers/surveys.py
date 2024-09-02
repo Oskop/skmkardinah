@@ -183,8 +183,8 @@ def handle_voice_file_rev(skm: SurveiKepuasanMasyarakatRev, f: UploadedFile, fac
                 name=basefilename + '.wav')
         skm.save()
         pathlib.Path(str(destination_dir) + output_wav).unlink(missing_ok=True)
-        if skm.komentar_suara.name:
-            message = "file upload successful"
+        # if skm.komentar_suara.name:
+        #     message = "file upload successful"
     else:
         message = f"convert to {output_wav} failed!"
     return message
