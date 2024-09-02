@@ -234,10 +234,14 @@ def input_survey_rev(id_registrasi, post, files):
             print(post.get('perawat-choose-time', ""))
             if post.get('perawat-choose-time', "") != "":
                 try:
-                    perawatlayanan = datetime.strptime(
-                        post.get('perawat-choose-time', ""),
-                        "%Y-%m-%dT%H:%M:%S"
-                        )
+                    if len(post.get('perawat-choose-time', "")) == 16:
+                        perawatlayanan = datetime.strptime(
+                            post.get('perawat-choose-time', ""),
+                            "%Y-%m-%dT%H:%M")
+                    else:
+                        perawatlayanan = datetime.strptime(
+                            post.get('perawat-choose-time', ""),
+                            "%Y-%m-%dT%H:%M:%S")
                 except Pelayanan.DoesNotExist:
                     perawatlayanan = None
             thesurvey = SurveiKepuasanMasyarakatRev(
