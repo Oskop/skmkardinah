@@ -27,10 +27,11 @@ def current_survey_environment_by_norm(request: HttpRequest, norm: str = None):
                 kamar, error = get_pemakaiankamar_by(pasien)
                 dokters, errordokter = get_dokters_from_pelayanan(pasien)
                 timess, errortimess = get_perawattimes_from_pelayanan(pasien)
-                if kamar:
+                ruangans = [k.id_tempattidur.id_kamar.id_ruangan.nama 
+                            for k in kamar]
+                if len(kamar) != 0:
                     response["data"].update(
-                        {"ruangan":
-                            kamar.id_tempattidur.id_kamar.id_ruangan.nama})
+                        {"ruangan": ruangans})
                     if len(dokters) != 0:
                         response["data"].update(
                             {"dokters": dokters})
@@ -44,7 +45,7 @@ def current_survey_environment_by_norm(request: HttpRequest, norm: str = None):
                     response["data"].update({"norm": pasien.nocm})
                     response["data"].update({"pasien": pasien.nama})
                     response["data"].update({"noregistrasi":
-                                            kamar.id_registrasi_id})
+                                            kamar[0].id_registrasi_id})
                     response["data"].update({"jk": pasien.jk})
                     response["success"] = True
                 else:
