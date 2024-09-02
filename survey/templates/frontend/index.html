@@ -1119,19 +1119,23 @@
             getRequest("{% url 'survey-riwayat-pelayanan' %}" + norm).then((response) => {
                 if (response.success) {
                     document.getElementById('noregistrasi').value = response.data.noregistrasi
-                    if (response.data.dokters.length != 0) {
-                        document.getElementById('dokter-pilihan').innerHTML = ""
-                        document.getElementById('dokter-pilihan').disabled = false
-                        opt = document.createElement('option')
-                        opt.value = ""; opt.text = "Pilih Dokter"
-                        document.getElementById('dokter-pilihan').append(opt)
-                        response.data.dokters.forEach(d => {
+                    if (response.data.dokters != undefined && response.data.dokters != null) {
+                        if (response.data.dokters.length != 0) {
+                            document.getElementById('dokter-pilihan').innerHTML = ""
+                            document.getElementById('dokter-pilihan').disabled = false
                             opt = document.createElement('option')
-                            opt.value = d[0]; opt.text = d[1]
+                            opt.value = ""; opt.text = "Pilih Dokter"
                             document.getElementById('dokter-pilihan').append(opt)
-                        });
+                            response.data.dokters.forEach(d => {
+                                opt = document.createElement('option')
+                                opt.value = d[0]; opt.text = d[1]
+                                document.getElementById('dokter-pilihan').append(opt)
+                            });
+                        } else {
+                            alert("Pasien belum mendapatkan pelayanan dari dokter.")
+                        }
                     }
-                    if (response.data.perawattimes.length != 0) {
+                    if (response.data.perawattimes != undefined && response.data.perawattimes != null) {
                         document.getElementById('perawat-choose-time').disabled = false
                         document.getElementById('perawat-choose-time').min = response.data.perawattimes[0]
                         document.getElementById('perawat-choose-time').max = response.data.perawattimes[1]
@@ -1146,7 +1150,7 @@
                         //     document.getElementById('perawat-time-pilihan').append(opt)
                         // });
                     }
-                    if (response.data.ruangan.length != 0) {
+                    if (response.data.ruangan != undefined && response.data.ruangan != null) {
                         response.data.ruangan.forEach((r, i) => {
                             document.getElementById('riwayat-ruangan').value += r
                             if (i < response.data.ruangan.length - 1) {
