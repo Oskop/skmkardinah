@@ -10,7 +10,7 @@ def get_pemakaiankamar_by(pasien: Pasien):
         pemakaiankamar: QuerySet[PemakaianKamar] = reg[0].pemakaiankamar_set.all(
         ).order_by('-tglmasuk')
         if pemakaiankamar.count() !=0:
-            return pemakaiankamar[0], error
+            return pemakaiankamar, error
         else:
             error = "Pasien belum memasuki ruangan!"
     else:

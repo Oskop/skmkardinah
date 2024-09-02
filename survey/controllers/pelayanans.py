@@ -2,6 +2,7 @@ from survey.models import (
     Pelayanan, Pegawai, JenisPegawai,
     Pasien, Registrasi)
 from django.db.models import QuerySet
+from datetime import datetime
 
 
 def get_dokters_from_pelayanan(pasien: Pasien):
@@ -36,12 +37,21 @@ def get_perawattimes_from_pelayanan(pasien: Pasien):
         pelayanans: QuerySet[Pelayanan] = reg[0].pelayanan_set.all(
         ).order_by('-tgllayanan')
         if pelayanans.count() !=0:
-            for pelayanan in pelayanans:
-                if pelayanan.id_pegawai:
-                    if pelayanan.id_pegawai.jenis_pegawai_id == '02':
-                        pelayanantimes.append(
-                            (pelayanan.id, pelayanan.tgllayanan.strftime(
-                                '%Y-%m-%d %H:%M:%S')))
+            pelayanantimes.append(reg[0].tglregistrasi.isoformat(
+                timespec='seconds').split('+')[0])
+            if reg[0].tglpulang:
+                pelayanantimes.append(
+                    reg[0].tglpulang.isoformat(timespec='seconds').split('+')[0]
+                )
+            else:
+                pelayanantimes.append(datetime.now().isoformat(timespec='seconds'))
+            # for pelayanan in pelayanans:
+            #     if pelayanan.id_pegawai:
+            #         if pelayanan.id_pegawai.jenis_pegawai_id == '02':
+            #             pelayanantimes.append(
+            #                 (pelayanan.id, pelayanan.tgllayanan.strftime(
+            #                     '%Y-%m-%d %H:%M:%S'))
+            #             )
         else:
             error = "Pasien belum mendapatkan pelayanan dari perawat!"
     else:

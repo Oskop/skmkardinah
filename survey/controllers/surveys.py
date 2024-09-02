@@ -231,10 +231,12 @@ def input_survey_rev(id_registrasi, post, files):
                     dokter = Pegawai.objects.get(id=post.get('dokter-pilihan'))
                 except Pegawai.DoesNotExist:
                     dokter = None
-            if post.get('perawat-time-choice', "") != "":
+            print(post.get('perawat-choose-time', ""))
+            if post.get('perawat-choose-time', "") != "":
                 try:
-                    perawatlayanan = Pelayanan.objects.get(
-                        id=post.get('perawat-time-choice', ""))
+                    perawatlayanan = datetime.strptime(
+                        post.get('perawat-choose-time', ""),
+                        )
                 except Pelayanan.DoesNotExist:
                     perawatlayanan = None
             thesurvey = SurveiKepuasanMasyarakatRev(
