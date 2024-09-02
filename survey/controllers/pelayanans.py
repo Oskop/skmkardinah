@@ -5,6 +5,18 @@ from django.db.models import QuerySet
 from datetime import datetime
 
 
+
+def is_given_pelayanan(pasien: Pasien) -> bool:
+    reg: QuerySet[Registrasi] = Registrasi.objects.filter(
+        norm=pasien.nocm).order_by('-tglregistrasi')
+    if reg.count() != 0:
+        pelayanans: QuerySet[Pelayanan] = reg[0].pelayanan_set.all(
+        ).order_by('-tgllayanan')
+        if pelayanans.count() != 0:
+            return True
+    return False
+
+
 def get_dokters_from_pelayanan(pasien: Pasien):
     error = ""
     dokters = []
