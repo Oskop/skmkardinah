@@ -312,7 +312,7 @@
                                                     <button class="btn btn-danger" type="button" onclick="cancelAudioRecording(audioRecorderPerawat)"><i
                                                             class="fa fa-solid fa-record"></i><span id="">Batal</span></button>
                                                     <button class="btn btn-secondary" type="button"
-                                                        onclick="StopAudioRecording(audioRecorderPerawat, audioElementSourcePerawat, audioElementPerawat)"><i
+                                                        onclick="StopAudioRecording(audioRecorderPerawat, audioElementSourcePerawat, audioElementPerawat, 'perawat')"><i
                                                             class="fa fa-solid fa-record"></i><span id="">Berhenti</span></button>
                                                 </div>
                                             </div>
@@ -456,7 +456,7 @@
                                                         onclick="cancelAudioRecording(audioRecorderDokter)"><i
                                                             class="fa fa-solid fa-record"></i><span id="">Batal</span></button>
                                                     <button class="btn btn-secondary" type="button"
-                                                        onclick="StopAudioRecording(audioRecorderDokter, audioElementSourceDokter, audioElementDokter)"><i
+                                                        onclick="StopAudioRecording(audioRecorderDokter, audioElementSourceDokter, audioElementDokter, 'dokter')"><i
                                                             class="fa fa-solid fa-record"></i><span id="">Berhenti</span></button>
                                                 </div>
                                             </div>
@@ -588,7 +588,7 @@
                                                     <button class="btn btn-danger" type="button" onclick="cancelAudioRecording(audioRecorderFasilitas)"><i
                                                             class="fa fa-solid fa-record"></i><span id="">Batal</span></button>
                                                     <button class="btn btn-secondary" type="button"
-                                                        onclick="StopAudioRecording(audioRecorderFasilitas, audioElementSourceFasilitas, audioElementFasilitas)"><i
+                                                        onclick="StopAudioRecording(audioRecorderFasilitas, audioElementSourceFasilitas, audioElementFasilitas, 'fasilitas')"><i
                                                             class="fa fa-solid fa-record"></i><span id="">Berhenti</span></button>
                                                 </div>
                                             </div>
@@ -720,7 +720,7 @@
                                                     <button class="btn btn-danger" type="button" onclick="cancelAudioRecording(audioRecorderFarmasi)"><i
                                                             class="fa fa-solid fa-record"></i><span id="">Batal</span></button>
                                                     <button class="btn btn-secondary" type="button"
-                                                        onclick="StopAudioRecording(audioRecorderFarmasi, audioElementSourceFarmasi, audioElementFarmasi)"><i
+                                                        onclick="StopAudioRecording(audioRecorderFarmasi, audioElementSourceFarmasi, audioElementFarmasi, 'farmasi')"><i
                                                             class="fa fa-solid fa-record"></i><span id="">Berhenti</span></button>
                                                 </div>
                                             </div>
@@ -946,20 +946,20 @@
         // script.js
         var formElement = document.getElementById('surveyForm')
         var audioElementPerawat = document.getElementsByClassName("audio-element-perawat")[0];
-        var audioElementSourcePerawat = document.getElementsByClassName("audio-element-perawat")[0]
-            .getElementsByTagName("source-audio-perawat")[0];
+        var audioElementSourcePerawat
+        // var audioElementSourcePerawat = document.getElementsByClassName("audio-element-perawat")[0]
+        //     .getElementsByTagName("source-audio-perawat")[0];
         var audioBlobFinishedPerawat
         var audioElementDokter = document.getElementsByClassName("audio-element-dokter")[0];
-        var audioElementSourceDokter = document.getElementsByClassName("audio-element-dokter")[0]
-            .getElementsByTagName("source-audio-dokter")[0];
+        var audioElementSourceDokter
         var audioBlobFinishedDokter
+
         var audioElementFasilitas = document.getElementsByClassName("audio-element-fasilitas")[0];
-        var audioElementSourceFasilitas = document.getElementsByClassName("audio-element-fasilitas")[0]
-            .getElementsByTagName("source-audio-fasilitas")[0];
+        var audioElementSourceFasilitas
         var audioBlobFinishedFasilitas
+
         var audioElementFarmasi = document.getElementsByClassName("audio-element-farmasi")[0];
-        var audioElementSourceFarmasi = document.getElementsByClassName("audio-element-farmasi")[0]
-            .getElementsByTagName("source-audio-farmasi")[0];
+        var audioElementSourceFarmasi
         var audioBlobFinishedFarmasi
 
         async function kirimSurvey(){
@@ -1166,15 +1166,39 @@
         })
 
 
-        function createSourceForAudioElement(audioElement, audioElementSource) {
+        function createSourceForAudioElement(audioElement, audioElementSource, faktor) {
+            console.log(audioElement)
             let sourceElement = document.createElement("source");
-            audioElement.appendChild(sourceElement);
+            if (faktor.toLowerCase() == "perawat") {
+                // sourceElement.id = "source-audio-perawat"
+                audioElementSourcePerawat = sourceElement
+                audioElement.appendChild(audioElementSourcePerawat);
+                audioElementSource = audioElementSourcePerawat;
+            } else if (faktor.toLowerCase() == "dokter") {
+                // sourceElement.id = "source-audio-dokter"
+                audioElementSourceDokter = sourceElement
+                audioElement.appendChild(audioElementSourceDokter);
+                audioElementSource = audioElementSourceDokter;
+            } else if (faktor.toLowerCase() == "fasilitas") {
+                // sourceElement.id = "source-audio-fasilitas"
+                audioElementSourceFasilitas = sourceElement
+                audioElement.appendChild(audioElementSourceFasilitas);
+                audioElementSource = audioElementSourceFasilitas;
+            } else if (faktor.toLowerCase() == "farmasi") {
+                audioElementSourceFarmasi = sourceElement
+                audioElement.appendChild(audioElementSourceFarmasi);
+                audioElementSource = audioElementSourceFarmasi;
+                // sourceElement.id = "source-audio-farmasi"
+            }
+            // audioElementSource = sourceElement;
+            console.log(audioElementSource)
+            console.log(audioElement)
+            // audioElement.appendChild(sourceElement);
 
-            audioElementSource = sourceElement;
         }
 
 
-        function playAudio(audioElementSource, audioElement, recorderAudioAsBlob) {
+        function playAudio(audioElementSource, audioElement, recorderAudioAsBlob, faktor) {
 
             //read content of files (Blobs) asynchronously
             let reader = new FileReader();
@@ -1187,7 +1211,16 @@
                 //If this is the first audio playing, create a source element
                 //as pre populating the HTML with a source of empty src causes error
                 if (!audioElementSource) //if its not defined create it (happens first time only)
-                    createSourceForAudioElement(audioElement, audioElementSource);
+                    createSourceForAudioElement(audioElement, audioElementSource, faktor);
+                if (faktor.toLowerCase() == "perawat") {
+                    audioElementSource = audioElementSourcePerawat;
+                } else if (faktor.toLowerCase() == "dokter") {
+                    audioElementSource = audioElementSourceDokter;
+                } else if (faktor.toLowerCase() == "fasilitas") {
+                    audioElementSource = audioElementSourceFasilitas;
+                } else if (faktor.toLowerCase() == "farmasi") {
+                    audioElementSource = audioElementSourceFarmasi;
+                }
 
                 //set the audio element's source using the base64 URL
                 audioElementSource.src = base64URL;
@@ -1664,7 +1697,7 @@
 
         /** Stops the currently started audio recording
         */
-        function StopAudioRecording(audioRecorder, audioElementSource, audioElement) {
+        function StopAudioRecording(audioRecorder, audioElementSource, audioElement, faktor) {
             //stop the recording using the audio recording API
             console.log("Stopping Audio Recording...")
             audioRecorder.stop()
@@ -1673,8 +1706,17 @@
 
                     //Do something with the recorded audio
                     //...
-                    playAudio(audioElementSource, audioElement, audioAsblob)
-                    audioBlobFinished = audioAsblob
+                    playAudio(audioElementSource, audioElement, audioAsblob, faktor)
+                    if (faktor.toLowerCase() == "perawat") {
+                        audioBlobFinishedPerawat = audioAsblob
+                    } else if (faktor.toLowerCase() == "dokter") {
+                        audioBlobFinishedDokter = audioAsblob
+                    } else if (faktor.toLowerCase() == "fasilitas") {
+                        audioBlobFinishedFasilitas = audioAsblob
+                    } else if (faktor.toLowerCase() == "farmasi") {
+                        audioBlobFinishedFarmasi = audioAsblob
+                    }
+                    // audioBlobFinished = audioAsblob
                     // kirimSuaraAlihTeks()
                 })
                 .catch(error => {
