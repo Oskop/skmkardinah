@@ -149,6 +149,12 @@
                                     <input type="hidden" id="noregistrasi" name="noregistrasi" value="">
                                 </div>
                             </div>
+                            <div class="form-group col-8">
+                                <label for="instalasi">Riwayat Ruangan</label>
+                                <div class="d-flex">
+                                    <input type="text" class="form-control" id="riwayat-ruangan" name="riwayat-ruangan" value="" disabled="disabled">
+                                </div>
+                            </div>
                         </div>
                         <div class="d-flex justify-content-center mt-3">
                             <ul class="nav nav-tabs" id="myTabSurvey" role="tablist">
@@ -266,9 +272,10 @@
                                     <div class="col-8 pt-1 col">
                                         <div class="form-group">
                                             <label for="perawat-time-pilihan">Pilih Waktu Pelanan</label>
-                                            <select name="perawat-time-pilihan" id="perawat-time-pilihan" disabled="" class="form-control">
+                                            <input type="datetime-local" name="perawat-choose-time" id="perawat-choose-time" disabled="disabled">
+                                            <!-- <select name="perawat-time-pilihan" id="perawat-time-pilihan" disabled="" class="form-control">
                                                 <option value="">Kosongkan</option>
-                                            </select>
+                                            </select> -->
                                         </div>
                                     </div>
                                 </div>
@@ -902,36 +909,36 @@
     </script>
     <script>
 
-        KioskBoard.init({
-            keysArrayOfObjects: null,
-            keysJsonUrl: "{% static 'assets/dist/kioskboard-keys-english.json' %}",
-            keysSpecialCharsArrayOfStrings: null,
-            keysNumpadArrayOfNumbers: null,
-            language: 'en',
-            theme: 'light',
-            autoScroll: true,
-            capsLockActive: true,
-            allowRealKeyboard: false,
-            allowMobileKeyboard: false,
-            cssAnimations: true, // CSS animations duration as millisecond 
-            cssAnimationsDuration: 360, // CSS animations style for opening or closing the keyboard => "slide" || "fade" 
-            cssAnimationsStyle: 'slide', // Enable or Disable Spacebar functionality on the keyboard. The Spacebar will be passive when "false" 
-            keysAllowSpacebar: true, // Text of the Space key (Spacebar). Without text => " " 
-            keysSpacebarText: 'Space', // Font family of the keys 
-            keysFontFamily: 'sans-serif', // Font size of the keys 
-            keysFontSize: '15px', // Font weight of the keys 
-            keysFontWeight: 'normal', // Size of the icon keys 
-            keysIconSize: '15px', // Text of the Enter key (Enter/Return). Without text => " " 
-            keysEnterText: 'Enter', // The callback function of the Enter key. This function will be called when the enter key has been clicked. 
-            keysEnterCallback: undefined, // The Enter key can close and remove the keyboard. Prevented when "false" 
-            keysEnterCanClose: true,
-        });
+        // KioskBoard.init({
+        //     keysArrayOfObjects: null,
+        //     keysJsonUrl: "{% static 'assets/dist/kioskboard-keys-english.json' %}",
+        //     keysSpecialCharsArrayOfStrings: null,
+        //     keysNumpadArrayOfNumbers: null,
+        //     language: 'en',
+        //     theme: 'light',
+        //     autoScroll: true,
+        //     capsLockActive: true,
+        //     allowRealKeyboard: false,
+        //     allowMobileKeyboard: false,
+        //     cssAnimations: true, // CSS animations duration as millisecond 
+        //     cssAnimationsDuration: 360, // CSS animations style for opening or closing the keyboard => "slide" || "fade" 
+        //     cssAnimationsStyle: 'slide', // Enable or Disable Spacebar functionality on the keyboard. The Spacebar will be passive when "false" 
+        //     keysAllowSpacebar: true, // Text of the Space key (Spacebar). Without text => " " 
+        //     keysSpacebarText: 'Space', // Font family of the keys 
+        //     keysFontFamily: 'sans-serif', // Font size of the keys 
+        //     keysFontSize: '15px', // Font weight of the keys 
+        //     keysFontWeight: 'normal', // Size of the icon keys 
+        //     keysIconSize: '15px', // Text of the Enter key (Enter/Return). Without text => " " 
+        //     keysEnterText: 'Enter', // The callback function of the Enter key. This function will be called when the enter key has been clicked. 
+        //     keysEnterCallback: undefined, // The Enter key can close and remove the keyboard. Prevented when "false" 
+        //     keysEnterCanClose: true,
+        // });
 
-        $(document).ready(function () {
-            KioskBoard.run('.js-kioskboard-input', {
-                // ...init options 
-            });
-        });
+        // $(document).ready(function () {
+        //     KioskBoard.run('.js-kioskboard-input', {
+        //         // ...init options 
+        //     });
+        // });
         
     </script>
     <script src="{% static 'survey/assets_frontend/assets/js/main.js' %}"></script>
@@ -1125,23 +1132,35 @@
                         });
                     }
                     if (response.data.perawattimes.length != 0) {
-                        document.getElementById('perawat-time-pilihan').innerHTML = ""
-                        document.getElementById('perawat-time-pilihan').disabled = false
-                        opt = document.createElement('option')
-                        opt.value = ""; opt.text = "Pilih Waktu Pelayanan"
-                        document.getElementById('perawat-time-pilihan').append(opt)
-                        response.data.perawattimes.forEach(p => {
-                            opt = document.createElement('option')
-                            opt.value = p[0]; opt.text = p[1]
-                            document.getElementById('perawat-time-pilihan').append(opt)
+                        document.getElementById('perawat-choose-time').disabled = false
+                        document.getElementById('perawat-choose-time').min = response.data.perawattimes[0]
+                        document.getElementById('perawat-choose-time').max = response.data.perawattimes[1]
+                        // document.getElementById('perawat-time-pilihan').innerHTML = ""
+                        // document.getElementById('perawat-time-pilihan').disabled = false
+                        // opt = document.createElement('option')
+                        // opt.value = ""; opt.text = "Pilih Waktu Pelayanan"
+                        // document.getElementById('perawat-time-pilihan').append(opt)
+                        // response.data.perawattimes.forEach(p => {
+                        //     opt = document.createElement('option')
+                        //     opt.value = p[0]; opt.text = p[1]
+                        //     document.getElementById('perawat-time-pilihan').append(opt)
+                        // });
+                    }
+                    if (response.data.ruangan.length != 0) {
+                        response.data.ruangan.forEach((r, i) => {
+                            document.getElementById('riwayat-ruangan').value += r
+                            if (i < response.data.ruangan.length - 1) {
+                                document.getElementById('riwayat-ruangan').value += ', '
+                            }
                         });
                     }
-                    document.getElementById('jk').value = response.data.jk
-                    if (response.data.error != "") {
+                    // document.getElementById('jk').value = response.data.jk
+                    if (response.data.error != "" && response.data.error != undefined && response.data.error != null) {
                         alert(response.data.error)
                     }
                 } else {
                     alert(response.error)
+                    console.log(respo)
                 }
             })
         })
