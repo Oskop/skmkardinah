@@ -7,7 +7,8 @@ from django.http import (
 from survey.controllers.pasiens import get_pasien_by_norm
 from survey.controllers.kamars import get_pemakaiankamar_by
 from survey.controllers.pelayanans import (
-    get_dokters_from_pelayanan, get_perawattimes_from_pelayanan)
+    get_dokters_from_pelayanan, get_perawattimes_from_pelayanan,
+    is_given_pelayanan)
 from survey.controllers.surveys import (
     input_survey, skm_stt, laporan_export_pdf,
     laporan_export_pdf_rev,
@@ -24,36 +25,39 @@ def current_survey_environment_by_norm(request: HttpRequest, norm: str = None):
         if request.method == 'GET':
             pasien = get_pasien_by_norm(norm=norm)
             if not isinstance(pasien, str):
-                kamar, error = get_pemakaiankamar_by(pasien)
-                dokters, errordokter = get_dokters_from_pelayanan(pasien)
-                timess, errortimess = get_perawattimes_from_pelayanan(pasien)
-                ruangans = [k.id_tempattidur.id_kamar.id_ruangan.nama 
-                            for k in kamar]
-                if len(kamar) != 0:
-                    response["data"].update(
-                        {"ruangan": ruangans})
-                    if len(dokters) != 0:
+                if is_given_pelayanan(pasien):
+                    kamar, error = get_pemakaiankamar_by(pasien)
+                    dokters, errordokter = get_dokters_from_pelayanan(pasien)
+                    timess, errortimess = get_perawattimes_from_pelayanan(pasien)
+                    ruangans = [k.id_tempattidur.id_kamar.id_ruangan.nama 
+                                for k in kamar]
+                    if len(kamar) != 0:
                         response["data"].update(
-                            {"dokters": dokters})
+                            {"ruangan": ruangans})
+                        if len(dokters) != 0:
+                            response["data"].update(
+                                {"dokters": dokters})
+                        else:
+                            response["error"] = errordokter
+                        if len(timess) != 0:
+                            response["data"].update(
+                                {"perawattimes": timess})
+                        else:
+                            response["error"] += f"\n {errortimess}"
+                        response["data"].update({"norm": pasien.nocm})
+                        response["data"].update({"pasien": pasien.nama})
+                        response["data"].update({"noregistrasi":
+                                                kamar[0].id_registrasi_id})
+                        response["data"].update({"jk": pasien.jk})
+                        response["success"] = True
                     else:
-                        response["error"] = errordokter
-                    if len(timess) != 0:
-                        response["data"].update(
-                            {"perawattimes": timess})
-                    else:
-                        response["error"] += f"\n {errortimess}"
-                    response["data"].update({"norm": pasien.nocm})
-                    response["data"].update({"pasien": pasien.nama})
-                    response["data"].update({"noregistrasi":
-                                            kamar[0].id_registrasi_id})
-                    response["data"].update({"jk": pasien.jk})
-                    response["success"] = True
+                        response["error"] = error
                 else:
-                    response["error"] = error
+                    response["error"] = "Pasien belum mendapatkan pelayanan!"
             else:
-                response["error"] = "Pasien tidak ditemukan"
+                response["error"] = "Pasien tidak ditemukan!"
         else:
-            response['error'] = "Metode tidak diizinkan"
+            response['error'] = "Metode tidak diizinkan!"
     else:
         response["error"] = "NoRM Tidak Terkirim!"
     return JsonResponse(response)
