@@ -501,7 +501,7 @@ class SurveiKepuasanMasyarakatRevAdmin(
                         for x in queryset
                         if x.created_at.year == b.year and x.created_at.month == b.month
                     ]
-                )
+                ) / queryset.filter(created_at__month=b.month, created_at__year=b.year).count()
             )
             fasilitas_totals.append(
                 sum(
@@ -514,7 +514,7 @@ class SurveiKepuasanMasyarakatRevAdmin(
                         for x in queryset
                         if x.created_at.year == b.year and x.created_at.month == b.month
                     ]
-                )
+                ) / queryset.filter(created_at__month=b.month, created_at__year=b.year).count()
             )
             perawat_totals.append(
                 sum(
@@ -527,7 +527,7 @@ class SurveiKepuasanMasyarakatRevAdmin(
                         for x in queryset
                         if x.created_at.year == b.year and x.created_at.month == b.month
                     ]
-                )
+                ) / queryset.filter(created_at__month=b.month, created_at__year=b.year).count()
             )
             dokter_totals.append(
                 sum(
@@ -540,7 +540,7 @@ class SurveiKepuasanMasyarakatRevAdmin(
                         for x in queryset
                         if x.created_at.year == b.year and x.created_at.month == b.month
                     ]
-                )
+                ) / queryset.filter(created_at__month=b.month, created_at__year=b.year).count()
             )
             all_total.append(
                 sum(
@@ -568,7 +568,7 @@ class SurveiKepuasanMasyarakatRevAdmin(
                         for x in queryset
                         if x.created_at.year == b.year and x.created_at.month == b.month
                     ]
-                )
+                ) / queryset.filter(created_at__month=b.month, created_at__year=b.year).count()
             )
 
         return {
