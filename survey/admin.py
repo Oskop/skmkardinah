@@ -127,32 +127,43 @@ class CustomUserAdmin(admin.ModelAdmin):
 #     list_per_page = 10
 
 
-# @admin.register(models.JenisPegawai)
-# class JenisPegawaiAdmin(admin.ModelAdmin):
-#     list_display = [x.attname.replace(
-#         'survey.JenisPegawai.', ''
-#     ) for x in models.JenisPegawai._meta.fields]
-#     # list_display = ['id', 'nama', 'id_JenisPegawai']
-#     # list_filter = (('mode', DateTimeRangeFilter),)
-#     search_fields = [x.attname.replace(
-#         'survey.JenisPegawai.', ''
-#     ) for x in models.JenisPegawai._meta.fields if (
-#         '_id' not in x.attname)]
-#     list_per_page = 10
+@admin.register(models.JenisPegawai)
+class JenisPegawaiAdmin(admin.ModelAdmin):
+    # This will help you to disable delete functionaliyt
+    def has_delete_permission(self, request, obj=None):
+        return False
+    
+    list_display = [x.attname.replace(
+        'survey.JenisPegawai.', ''
+    ) for x in models.JenisPegawai._meta.fields]
+    # list_display = ['id', 'nama', 'id_JenisPegawai']
+    # list_filter = (('mode', DateTimeRangeFilter),)
+    search_fields = [x.attname.replace(
+        'survey.JenisPegawai.', ''
+    ) for x in models.JenisPegawai._meta.fields if (
+        '_id' not in x.attname)]
+    list_per_page = 10
 
 
-# @admin.register(models.Pegawai)
-# class PegawaiAdmin(admin.ModelAdmin):
-#     list_display = [x.attname.replace(
-#         'survey.Pegawai.', ''
-#     ) for x in models.Pegawai._meta.fields]
-#     # list_display = ['id', 'nama', 'id_Pegawai']
-#     # list_filter = (('mode', DateTimeRangeFilter),)
-#     search_fields = [x.attname.replace(
-#         'survey.Pegawai.', ''
-#     ) for x in models.Pegawai._meta.fields if (
-#         '_id' not in x.attname)]
-#     list_per_page = 10
+@admin.register(models.Pegawai)
+class PegawaiAdmin(admin.ModelAdmin):
+    # This will help you to disable delete functionaliyt
+    def has_delete_permission(self, request, obj=None):
+        return False
+    
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.filter(jenis_pegawai__in=('00', '99'))
+    # list_display = [x.attname.replace(
+    #     'survey.Pegawai.', ''
+    # ) for x in models.Pegawai._meta.fields]
+    list_display = ['id', 'nama', 'jenis_pegawai']
+    # list_filter = (('mode', DateTimeRangeFilter),)
+    search_fields = [x.attname.replace(
+        'survey.Pegawai.', ''
+    ) for x in models.Pegawai._meta.fields if (
+        '_id' not in x.attname)]
+    list_per_page = 10
 
 
 # @admin.register(models.Layanan)
