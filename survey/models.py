@@ -424,8 +424,9 @@ class Pegawai(models.Model):
 
     Args:
         models (**kwargs): (
-            nama: str(10)
-
+            id: str(10),
+            nama: str(50),
+            jenis_pegawai: JenisPegawai,
         )
     """
     id = models.CharField(primary_key=True, max_length=10, db_column="id")
@@ -433,6 +434,9 @@ class Pegawai(models.Model):
     jenis_pegawai = models.ForeignKey(
         JenisPegawai, models.DO_NOTHING,
         blank=True, null=True, verbose_name="Jenis Pegawai")
+    
+    created_at = models.DateTimeField(
+        auto_now_add=True, blank=True, null=True)
 
     def __str__(self) -> str:
         return f"{self.nama}"
@@ -441,7 +445,7 @@ class Pegawai(models.Model):
         managed = True
         db_table = "pegawai"
         verbose_name = "Pegawai"
-        verbose_name_plural = "Para Pegawai"
+        verbose_name_plural = "Direktur"
 
 
 class Registrasi(models.Model):
