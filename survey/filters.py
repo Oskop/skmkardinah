@@ -7,7 +7,8 @@ from django.utils.translation import gettext_lazy as _
 from django_pandas.io import read_frame
 from survey.models import (
     SurveiKepuasanMasyarakat,
-    SurveiKepuasanMasyarakatRev)
+    SurveiKepuasanMasyarakatRev,
+    Pegawai)
 import pandas as pd
 import numpy as np
 import pdfkit
@@ -181,6 +182,7 @@ def export_to_pdf_survey_rev(
             'created_at').last().created_at.date(), 'full', locale='id')
     else:
         ke = '-'
+    tanggal = format_date(date.today(), format='long', locale='id_ID')
     df['Tanggal'] = [
             x.astimezone(indonesia_zone).to_pydatetime(
             ).date().strftime('%Y-%m-%d') for x in df['Tanggal']]
@@ -274,8 +276,14 @@ def export_to_pdf_survey_rev(
     #     data = open(logo_path, 'rb').read() # read bytes from file
     #     data_base64 = base64.b64encode(data)  # encode to base64 (bytes)
     #     data_base64 = data_base64.decode()    # convert bytes to string
+    direktur = Pegawai.objects.filter(
+        jenis_pegawai='00').order_by('-created_at')
+    if len(direktur) != 0:
+        direktur = direktur[0].nama
+    else:
+        direktur = "Kosong"
     context = {
-        'dari': dari, 'ke': ke,
+        'dari': dari, 'ke': ke, 'tanggal': tanggal, 'direktur': direktur,
         'logo_kardinah': Path(logo_path).absolute().__str__()
     }
     out = render_to_string(
