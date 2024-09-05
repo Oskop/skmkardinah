@@ -50,21 +50,49 @@
     font-size: 70px;
   } */
 </style>
-<div class="container">
-  <!-- <div class="image">
+
+<div>
+  <table class="dataframe" style="margin-left: auto; margin-right: auto;">
+    <thead>
+      <tr>
+        <th class="" style="">
+          <img src="{{ logo_kardinah }}" alt="" style="max-width:190px; margin:0px; padding:0px;">
+        </th>
+        <th class="" style="">
+          <div style="text-align:center; display: block;">
+            <h3 style="font-size: 30px; margin-bottom:0px;">RSUD KARDINAH KOTA TEGAL</h3>
+            <h4 style="font-size: 25px; margin-bottom:0px; margin-top: 0px;">Survei Kepuasan Masyarakat</h4>
+            <p style="margin-bottom:0px; margin-top: 0px;">Jl. KS Tubun No.4, Kota Tegal Tegal, Jawa Tengah, Indonesia 52124.</p>
+            <p style="margin-top:0px;">Phone: 0283-350377. Email: rsukardinahtegal@gmail.com.</p>
+          </div>
+        </th>
+      </tr>
+    </thead>
+    {% comment %} <tbody>
+      <tr>
+        <td class="ttdkiri" style="margin:auto">______________________________</td>
+        <td class="ttdkanan" style="margin:auto">______________________________</td>
+      </tr>
+    </tbody> {% endcomment %}
+  </table>
+</div>
+
+
+{% comment %} <div class="container">
+  <div class="image">
     <img src="{{ logo_kardinah }}" alt="">
-  </div> -->
-  <div style="text-align:center;">
+  </div>
+  <div style="text-align:center; display: block;">
     <h3 style="font-size: 30px; margin-bottom:0px;">RSUD KARDINAH KOTA TEGAL</h3>
     <h4 style="font-size: 25px; margin-bottom:0px; margin-top: 0px;">Survei Kepuasan Masyarakat</h4>
     <p style="margin-bottom:0px; margin-top: 0px;">Jl. KS Tubun No.4, Kota Tegal Tegal, Jawa Tengah, Indonesia 52124.</p>
     <p style="margin-top:0px;">Phone: 0283-350377. Email: rsukardinahtegal@gmail.com.</p>
   </div>
-</div>
+</div> {% endcomment %}
 
 
 <div style="text-align:center;">
-  <h4>LAPORAN SURVEI KEPUASAN MASYARAKAT</h4>
+  <h4 style="color:white">LAPORAN SURVEI KEPUASAN MASYARAKAT</h4>
   <h5>Tanggal: {% if dari and ke %}
   {{ dari }} {{ ke }}
   {% else %}
@@ -78,16 +106,20 @@
   {% include 'datasets/rawdataset_rev.html' %}
 </div>
 
-<!-- <br>
+<br>
 <table class="dataframe">
   <thead>
     <tr>
       <th class="ttdkiri" style="margin:auto"></th>
-      <th class="ttdkanan" style="margin:auto">{{ tanggal }}</th>
+      <th class="ttdkanan" style="margin:auto">Tegal, {{ tanggal }}</th>
     </tr>
     <tr>
-      <th class="ttdkiri">Disetujui Manajer</th>
-      <th class="ttdkanan">Bagian Purchasing</th>
+      <th class="ttdkiri" style="color:white">Disetujui Manajer</th>
+      <th class="ttdkanan">Mengetahui</th>
+    </tr>
+    <tr>
+      <th class="ttdkiri" style="color:white">Disetujui Manajer</th>
+      <th class="ttdkanan">Plt. Direktur RSUD Kardinah</th>
     </tr>
     <tr style="color:white">
       <th> asdas </th>
@@ -101,8 +133,8 @@
   </thead>
   <tbody>
     <tr>
-      <td class="ttdkiri" style="margin:auto">______________________________</td>
-      <td class="ttdkanan" style="margin:auto">______________________________</td>
+      <td class="ttdkiri" style="margin:auto; color:white">______________________________</td>
+      <td class="ttdkanan" style="margin:auto"><u>{{ direktur }}</u></td>
     </tr>
   </tbody>
-</table> -->
+</table>
