@@ -9,6 +9,8 @@ from survey.models import (
     SurveiKepuasanMasyarakat,
     SurveiKepuasanMasyarakatRev,
     Pegawai)
+from admincharts.utils import months_between_dates
+from django.utils import timezone
 import pandas as pd
 import numpy as np
 import pdfkit
@@ -22,6 +24,115 @@ import pytz
 pdfkit_config = pdfkit.configuration(
     wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
 indonesia_zone = pytz.timezone("Asia/Jakarta")
+
+
+def get_quality_values(numb: float):
+    if numb >= 4.5 and numb <= 5:
+        return "Sangat Memuaskan"
+    elif numb >= 3.5 and numb <= 4.4:
+        return "Memuaskan"
+    elif numb >= 3 and numb <= 3.4:
+        return "Cukup Memuaskan"
+    elif numb >= 2.5 and numb <= 2.9:
+        return "Kurang Memuaskan"
+    elif numb >= 0 and numb <= 2.4:
+        return "Tidak Memuaskan"
+    return "Tidak Diketahui"
+
+
+def get_datasets_labels_from_queryset(queryset):
+    # Cannot reorder the queryset at this point
+    earliest = min([x.created_at for x in queryset])
+
+    labels = []
+    farmasi_totals = []
+    perawat_totals = []
+    dokter_totals = []
+    fasilitas_totals = []
+    all_total = []
+    for b in months_between_dates(earliest, timezone.now()):
+        labels.append(b.strftime("%b %Y"))
+        farmasi_totals.append(
+            sum(
+                [
+                    (x.etika_farmasi_rate
+                     + x.penampilan_farmasi_rate
+                     + x.kecepatan_farmasi_rate
+                     + x.ketepatan_farmasi_rate
+                     + x.informatif_farmasi_rate) / 5
+                    for x in queryset
+                    if x.created_at.year == b.year and x.created_at.month == b.month
+                ]
+            ) / queryset.filter(created_at__month=b.month, created_at__year=b.year).count()
+        )
+        fasilitas_totals.append(
+            sum(
+                [
+                    (x.kelengkapan_fasilitas_rate
+                     + x.kebersihan_fasilitas_rate
+                     + x.kenyamanan_fasilitas_rate
+                     + x.kamarmandi_fasilitas_rate
+                     + x.kualitas_fasilitas_rate) / 5
+                    for x in queryset
+                    if x.created_at.year == b.year and x.created_at.month == b.month
+                ]
+            ) / queryset.filter(created_at__month=b.month, created_at__year=b.year).count()
+        )
+        perawat_totals.append(
+            sum(
+                [
+                    (x.etika_perawat_rate
+                     + x.penampilan_perawat_rate
+                     + x.kecakapan_perawat_rate
+                     + x.ketepatan_perawat_rate
+                     + x.komunikatif_perawat_rate) / 5
+                    for x in queryset
+                    if x.created_at.year == b.year and x.created_at.month == b.month
+                ]
+            ) / queryset.filter(created_at__month=b.month, created_at__year=b.year).count()
+        )
+        dokter_totals.append(
+            sum(
+                [
+                    (x.etika_dokter_rate
+                     + x.penampilan_dokter_rate
+                     + x.kecakapan_dokter_rate
+                     + x.ketepatan_dokter_rate
+                     + x.solutif_dokter_rate) / 5
+                    for x in queryset
+                    if x.created_at.year == b.year and x.created_at.month == b.month
+                ]
+            ) / queryset.filter(created_at__month=b.month, created_at__year=b.year).count()
+        )
+        all_total.append(
+            sum(
+                [
+                    (x.etika_farmasi_rate
+                     + x.penampilan_farmasi_rate
+                     + x.kecepatan_farmasi_rate
+                     + x.ketepatan_farmasi_rate
+                     + x.informatif_farmasi_rate
+                     + x.kelengkapan_fasilitas_rate
+                     + x.kebersihan_fasilitas_rate
+                     + x.kenyamanan_fasilitas_rate
+                     + x.kamarmandi_fasilitas_rate
+                     + x.kualitas_fasilitas_rate
+                     + x.etika_perawat_rate
+                     + x.penampilan_perawat_rate
+                     + x.kecakapan_perawat_rate
+                     + x.ketepatan_perawat_rate
+                     + x.komunikatif_perawat_rate
+                     + x.etika_dokter_rate
+                     + x.penampilan_dokter_rate
+                     + x.kecakapan_dokter_rate
+                     + x.ketepatan_dokter_rate
+                     + x.solutif_dokter_rate) / 20
+                    for x in queryset
+                    if x.created_at.year == b.year and x.created_at.month == b.month
+                ]
+            ) / queryset.filter(created_at__month=b.month, created_at__year=b.year).count()
+        )
+    return labels, farmasi_totals, perawat_totals, dokter_totals, fasilitas_totals, all_total
 
 
 def export_to_html(request, queryset):
@@ -258,6 +369,15 @@ def export_to_pdf_survey_rev(
     dfnew.loc[len(dfnew.index)] = [
         "",
         "Rata-rata",
+        str(round(dfnew.loc[:, 'Rating Fasilitas'].mean(), 2)).replace('.', ','),
+        str(round(dfnew.loc[:, 'Rating Perawat'].mean(), 2)).replace('.', ','),
+        str(round(dfnew.loc[:, 'Rating Dokter'].mean(), 2)).replace('.', ','),
+        str(round(dfnew.loc[:, 'Rating Farmasi'].mean(), 2)).replace('.', ','),
+        str(round(dfnew.loc[:, 'Rating Total'].mean(), 2)).replace('.', ','),
+    ]
+    dfnew.loc[len(dfnew.index)] = [
+        "",
+        "Kepuasan",
         str(round(dfnew.loc[:, 'Rating Fasilitas'].mean(), 2)).replace('.', ','),
         str(round(dfnew.loc[:, 'Rating Perawat'].mean(), 2)).replace('.', ','),
         str(round(dfnew.loc[:, 'Rating Dokter'].mean(), 2)).replace('.', ','),
