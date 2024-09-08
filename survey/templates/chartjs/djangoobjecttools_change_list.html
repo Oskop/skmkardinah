@@ -9,7 +9,18 @@
 {% block pretitle %}
 {{ block.super }}
 <div id="admincharts"></div>
+<div>
+  <ul><h1>Rentang Nilai</h1>
+    <li>4,5 - 5 : Sangat Memuaskan</li>
+    <li>3,5 - 4,4 : Memuaskan</li>
+    <li>3 - 3,4 : Cukup Memuaskan</li>
+    <li>2,5 - 2,9 : Kurang Memuaskan</li>
+    <li>0 - 2,4 : Tidak Memuaskan</li>
+  </ul>
+</div>
 {% endblock %}
+
+{% block content_title %}<h1>Daftar Survey Kepuasan Masyarakat</h1>{% endblock %}
 
 {% block object-tools-items %}
   <a href="#" onclick="export_pdf(this)" class="button">
