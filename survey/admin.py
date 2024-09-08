@@ -593,6 +593,33 @@ class SurveiKepuasanMasyarakatRevAdmin(
             ],
         }
     
+    # def get_list_chart_options(self, queryset):
+    #     return {
+    #         "aspectRatio": 6,
+    #         "plugins": {
+    #             "tooltip": {
+    #                 "enabled": True,
+    #                 "callbacks": {
+    #                     "label": """function (tooltipData) {
+    #                             const labels = 
+    #                                   tooltipData.dataset.label.toString();
+    #                             const values =
+    #                               tooltipData.dataset.data[tooltipData.dataIndex];
+    #                             const result = 
+    #                                   tooltipData.dataset.data.reduce(
+    #                                 (var1, var2) => var1 + var2,
+    #                                 0
+    #                             );
+    #                             const percentage = 
+    #                                   ((values / result) * 100).toFixed(2) + "%";
+
+    #                             return `${labels}: ${values} (${percentage})`;
+    #                         },"""
+    #                 }
+    #             }
+    #         }
+    #     }
+    
     def get_list_chart_queryset(self, changelist):
         return changelist.queryset
     
@@ -631,12 +658,12 @@ class SurveiKepuasanMasyarakatRevAdmin(
         'komentar_farmasi',
         'play_komentar_farmasi_suara',
         'created_at',]
-    list_filter = (('created_at', DateTimeRangeFilter),
-                   ReportExportFilter)
-    search_fields = [x.attname.replace(
-        'survey.SurveiKepuasanMasyarakatRev.', ''
-    ) for x in models.SurveiKepuasanMasyarakatRev._meta.fields if (
-        '_id' not in x.attname)]
+    list_filter = (('created_at', DateTimeRangeFilter),)
+    # search_fields = [x.attname.replace(
+    #     'survey.SurveiKepuasanMasyarakatRev.', ''
+    # ) for x in models.SurveiKepuasanMasyarakatRev._meta.fields if (
+    #     '_id' not in x.attname)]
+    
     @admin.display(ordering='id_registrasi__id',
                    description='Registrasi Pasien')
     def get_registrasi(self, obj: models.SurveiKepuasanMasyarakatRev):
@@ -723,13 +750,6 @@ class SurveiKepuasanMasyarakatRevAdmin(
     list_per_page = 10
     
     form = SurveiKepuasanMasyarakatRevForms
-    actions = ["laporan_survey_pdf",]
-
-    @admin.action(description="Laporan Survey")
-    def laporan_survey_pdf(self, request, queryset):
-        print('ada redirect atau tidak?')
-        print(export_to_pdf_survey_rev(request, queryset))
-        return HttpResponseRedirect('/')
 
 
     # @action(
