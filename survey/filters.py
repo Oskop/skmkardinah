@@ -366,23 +366,28 @@ def export_to_pdf_survey_rev(
         + df['informatif_farmasi_rate']) / 20
     dfnew = df[['No', 'Tanggal', 'Rating Fasilitas', 'Rating Perawat', 
                'Rating Dokter', 'Rating Farmasi', 'Rating Total']].copy()
+    rata_rata_fasilitas = round(dfnew.loc[:, 'Rating Fasilitas'].mean(), 2)
+    rata_rata_perawat = round(dfnew.loc[:, 'Rating Perawat'].mean(), 2)
+    rata_rata_dokter = round(dfnew.loc[:, 'Rating Dokter'].mean(), 2)
+    rata_rata_farmasi = round(dfnew.loc[:, 'Rating Farmasi'].mean(), 2)
+    rata_rata_total = round(dfnew.loc[:, 'Rating Total'].mean(), 2)
     dfnew.loc[len(dfnew.index)] = [
         "",
         "Rata-rata",
-        str(round(dfnew.loc[:, 'Rating Fasilitas'].mean(), 2)).replace('.', ','),
-        str(round(dfnew.loc[:, 'Rating Perawat'].mean(), 2)).replace('.', ','),
-        str(round(dfnew.loc[:, 'Rating Dokter'].mean(), 2)).replace('.', ','),
-        str(round(dfnew.loc[:, 'Rating Farmasi'].mean(), 2)).replace('.', ','),
-        str(round(dfnew.loc[:, 'Rating Total'].mean(), 2)).replace('.', ','),
+        str(rata_rata_fasilitas).replace('.', ','),
+        str(rata_rata_perawat).replace('.', ','),
+        str(rata_rata_dokter).replace('.', ','),
+        str(rata_rata_farmasi).replace('.', ','),
+        str(rata_rata_total).replace('.', ','),
     ]
     dfnew.loc[len(dfnew.index)] = [
         "",
-        "Kepuasan",
-        str(round(dfnew.loc[:, 'Rating Fasilitas'].mean(), 2)).replace('.', ','),
-        str(round(dfnew.loc[:, 'Rating Perawat'].mean(), 2)).replace('.', ','),
-        str(round(dfnew.loc[:, 'Rating Dokter'].mean(), 2)).replace('.', ','),
-        str(round(dfnew.loc[:, 'Rating Farmasi'].mean(), 2)).replace('.', ','),
-        str(round(dfnew.loc[:, 'Rating Total'].mean(), 2)).replace('.', ','),
+        "Tingkat Kepuasan",
+        get_quality_values(rata_rata_fasilitas),
+        get_quality_values(rata_rata_perawat),
+        get_quality_values(rata_rata_dokter),
+        get_quality_values(rata_rata_farmasi),
+        get_quality_values(rata_rata_total),
     ]
     Path(thepath).parent.mkdir(exist_ok=True)
     dfnew.to_html(
